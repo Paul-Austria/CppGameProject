@@ -1,0 +1,6 @@
+#define GameProject_VERSION_MAJOR @GameProject_VERSION_MAJOR@
+#define GameProject_VERSION_MINOR @GameProject_VERSION_MINOR@
+#define GameProject_VERSION_PATCH @GameProject_VERSION_PATCH@
+
+#define GameProject_NAME "@GameProject_NAME@"
+#define GameProject_VERSION  "@GameProject_VERSION@"
