@@ -13,3 +13,6 @@
 [submodule "Thirdparty/entt"]
 	path = Thirdparty/entt
 	url = https://github.com/skypjack/entt.git
+[submodule "GameEngine/Engine/Renderer/ImGUI/imgui"]
+	path = GameEngine/Engine/Renderer/ImGUI/imgui
+	url = git@github.com:ocornut/imgui.git
