@@ -1,0 +1,118 @@
+#pragma once
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
+namespace GameEngine
+{
+
+
+    enum TextureLoadType {
+        nearest = GL_NEAREST,
+        linear = GL_LINEAR,
+    };
+    struct Texture
+    {
+        unsigned int ID;
+        unsigned int width, height;
+        Texture() = default;
+        Texture(unsigned int width, unsigned int height, unsigned char* data, TextureLoadType loadType = nearest)
+        {
+            this->width = width;
+            this->height = height;
+            // create Texture
+            glGenTextures(1, &this->ID);
+            glBindTexture(GL_TEXTURE_2D, this->ID);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, loadType);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, loadType);
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            // set Texture wrap and filter modes
+            // unbind texture
+            glBindTexture(GL_TEXTURE_2D, 0);
+        };
+        void Bind()
+        {
+            glBindTexture(GL_TEXTURE_2D, this->ID);
+        };
+    };
+
+    struct SubTexture
+    {
+        SubTexture() = default;
+        SubTexture(Texture* mainTexture, unsigned int width, unsigned int height, float coordinates[]) : texture(mainTexture), width(width), height(height)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                textureCoordinates[i] = coordinates[i];
+            }
+        }
+        unsigned int width, height;
+        float textureCoordinates[8];
+        Texture* texture;
+    };
+
+
+
+
+/*
+    struct SubAnimation
+    {
+        SubAnimation() = default;
+        SubAnimation(std::vector<SubTexture*> textures, float frameTime, bool repeat = false)
+        {
+            this->repeat = repeat;
+            subTextures = textures;
+            this->frameTime = 1.0f / frameTime;
+        }
+        std::vector<SubTexture*> subTextures;
+        float frameTime;
+        bool repeat = false;
+    };
+    struct Animator
+    {
+        int AddSubAnimation(std::string name, SubAnimation sub)
+        {
+            animations[name] = sub;
+            return 0;
+        }
+        int SetCurrentAnimation(std::string name)
+        {
+            if (animations.find(name) != animations.end())
+            {
+                this->currentAnimation = animations[name];
+                currentPosition = 0;
+                timeSpend = 0;
+                return 0;
+            }
+            return -1;
+        }
+        void Update(Renderable* renderable, float time)
+        {
+            timeSpend += time;
+            if (timeSpend > currentAnimation.frameTime)
+            {
+                auto sub = currentAnimation.subTextures.at(currentPosition);
+                renderable->SetSubTexture(sub);
+                currentPosition++;
+                if (currentPosition >= currentAnimation.subTextures.size())
+                {
+                    currentPosition = 0;
+                }
+                timeSpend = 0;
+            }
+        }
+        std::unordered_map<std::string, SubAnimation> animations;
+        SubAnimation currentAnimation;
+        int currentPosition;
+        float timeSpend;
+    };
+
+    */
+
+} // namespace Engine

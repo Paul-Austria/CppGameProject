@@ -2,7 +2,7 @@
 
 #include <entt/entt.hpp>
 #include <string>
-
+#include <Engine/Entities/BaseComponents.hpp>
 
 namespace GameEngine {
 	class Entity;
@@ -32,8 +32,14 @@ namespace GameEngine {
 		friend class Engine;
 		friend class Entity;
 
+
+		CameraComponent editorCam;
+
 		void BackgroundUpdate(float deltaTime, bool isRunning);
 		void EditorUpdate(float deltaTime);
 		entt::registry registry;
+
+
+		bool useEditorCam = true; 
 	};
 }

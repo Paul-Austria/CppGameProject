@@ -6,10 +6,12 @@ set(SOURCES ${SOURCES}
 		Engine/Entities/BaseComponents.hpp
 
 		Engine/Renderer/Renderer.hpp
+		Engine/Renderer/Renderable.hpp
 		Engine/Core/Window.hpp
 		Engine/Utils/Profiling/ProfileInstance.hpp
 		Engine/Utils/Profiling/ProcessTimeProfile.hpp
-
+		Engine/Entities/data/DataStructs.hpp
+		Engine/ResourceManagement/TextureResourceManager.hpp
 
 		Engine/Renderer/ImGUI/imgui/imconfig.h
 		Engine/Renderer/ImGUI/imgui/imgui.h
@@ -36,10 +38,13 @@ set(SOURCES ${SOURCES}
 
 		Engine/Entities/Entity.cpp
 		Engine/Renderer/Renderer.cpp
+		Engine/Renderer/Renderable.cpp
 		Engine/Core/Window.cpp
 
 		Engine/Utils/Profiling/ProfileInstance.cpp
 		Engine/Utils/Profiling/ProcessTimeProfile.cpp
+		Engine/ResourceManagement/TextureResourceManager.cpp
+
 
 		Engine/Renderer/ImGUI/imgui/imgui.cpp
 		Engine/Renderer/ImGUI/imgui/imgui_demo.cpp
