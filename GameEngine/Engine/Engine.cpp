@@ -5,12 +5,12 @@
 #include "Scene/Scene.hpp"
 #include "Core/Window.hpp"
 #include "Renderer/Renderer.hpp"
+#include <Engine/Entities/Entity.hpp>
 GameEngine::Engine* GameEngine::Engine::instance = 0;
 
 namespace GameEngine {
     Engine::Engine()
     {
-        currentScene = new Scene();
     }
     Engine::~Engine()
     {
@@ -22,18 +22,12 @@ namespace GameEngine {
    
         window->Init(widht, height, title.c_str(), isFullScreen);
         Renderer::GetInstance()->Init();
-        if (currentScene != nullptr)
-        {
-            currentScene->Init();
-        }
+        
     }
 
     void Engine::SetCurrentScene(Scene* scene)
     {
-        if (currentScene != nullptr)
-        {
-            delete currentScene;
-        }
+        
         this->currentScene = scene;
         this->currentScene->Init();
     }

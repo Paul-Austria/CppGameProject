@@ -1,17 +1,19 @@
 set(SOURCES ${SOURCES}
 		Engine/Engine.hpp
-		Engine/Scene/Scene.hpp
-
 		Engine/Entities/Entity.hpp
+		Engine/Scene/Scene.hpp
 		Engine/Entities/BaseComponents.hpp
 
 		Engine/Renderer/Renderer.hpp
-		Engine/Renderer/Renderable.hpp
 		Engine/Core/Window.hpp
 		Engine/Utils/Profiling/ProfileInstance.hpp
 		Engine/Utils/Profiling/ProcessTimeProfile.hpp
 		Engine/Entities/data/DataStructs.hpp
 		Engine/ResourceManagement/TextureResourceManager.hpp
+		Engine/Utils/Serialisation/json/json.hpp
+		Engine/Utils/Serialisation/TextureLoader.hpp
+
+
 
 		Engine/Renderer/ImGUI/imgui/imconfig.h
 		Engine/Renderer/ImGUI/imgui/imgui.h
@@ -29,21 +31,24 @@ set(SOURCES ${SOURCES}
 
 
 		Engine/Renderer/Shaders/ShaderProgram.hpp
+		Engine/Renderer/Renderable.hpp
 
 )
 
 set(SOURCES ${SOURCES}
 		Engine/Engine.cpp
-		Engine/Scene/Scene.cpp
 
 		Engine/Entities/Entity.cpp
+		Engine/Scene/Scene.cpp
+
 		Engine/Renderer/Renderer.cpp
-		Engine/Renderer/Renderable.cpp
 		Engine/Core/Window.cpp
 
 		Engine/Utils/Profiling/ProfileInstance.cpp
 		Engine/Utils/Profiling/ProcessTimeProfile.cpp
 		Engine/ResourceManagement/TextureResourceManager.cpp
+		Engine/Utils/Serialisation/TextureLoader.cpp
+
 
 
 		Engine/Renderer/ImGUI/imgui/imgui.cpp
@@ -55,6 +60,7 @@ set(SOURCES ${SOURCES}
 		Engine/Renderer/ImGUI/imgui/backends/imgui_impl_opengl3.cpp
 
 		Engine/Renderer/Shaders/ShaderProgram.cpp
+		Engine/Renderer/Renderable.cpp
 
 
 )

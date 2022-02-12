@@ -10,6 +10,7 @@
 #include <filesystem>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <Engine/Entities/data/DataStructs.hpp>
 
 
 #include "ImGUI/ImGUIStyling.hpp"
@@ -50,7 +51,16 @@ namespace GameEngine {
 		ImGui_ImplGlfw_InitForOpenGL(Window::GetInstance()->GetWindow(), true);
 		ImGui_ImplOpenGL3_Init("#version 130");
 
-        sh = ShaderProgram("D:/PR/GameProject/Resources/Shaders/Vertex.vs", "D:/PR/GameProject/Resources/Shaders/Fragment.fs");
+        sh = ShaderProgram("Resources/Shaders/Vertex.vs", "Resources/Shaders/Fragment.fs");
+
+
+        glGenFramebuffers(1, &framebuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+ 
+        glGenRenderbuffers(1, &depthbuffer);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
+
+
 	}
 	void Renderer::StartImGUI()
 	{
@@ -67,14 +77,42 @@ namespace GameEngine {
 
 
 	}
-	void Renderer::BeginRender(CameraComponent& camera)
+	void Renderer::BeginRender(CameraComponent& camera, Texture& renderTarget)
 	{
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+        if (renderTarget.ID == 0)
+        {
+            glGenTextures(1, &renderTarget.ID);
+        }
+        currentTarget = renderTarget;
+        glBindTexture(GL_TEXTURE_2D, renderTarget.ID);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderTarget.width, renderTarget.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+
+        glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, renderTarget.width, renderTarget.height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
+
+
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTarget.ID, 0);
+        GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, DrawBuffers);
+
+
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         sh.useShader();
         
-        float width = Window::GetInstance()->GetWidth() / camera.zoom;
-        float height = Window::GetInstance()->GetHeigth() / camera.zoom;;
+        float width = renderTarget.width / camera.zoom;
+        float height = renderTarget.height/ camera.zoom;;
         glm::mat4 projection = glm::ortho(0.0f, width, height, 0.0f, -10000.0f, 10000.0f);
         sh.setMat4("projection", projection);
         sh.setMat4("view", camera.GetViewMatrix());
@@ -82,8 +120,8 @@ namespace GameEngine {
 	}
 	void Renderer::RenderQuad(Renderable& renderable, const TransformComponent& TransformComponent, const CameraComponent& cameraComponent)
 	{
-        float width = Window::GetInstance()->GetWidth() / 2.0f / cameraComponent.zoom;
-        float height = Window::GetInstance()->GetHeigth() / 2.0f / cameraComponent.zoom;
+        float width = currentTarget.width / 2.0f / cameraComponent.zoom;
+        float height = currentTarget.height / 2.0f / cameraComponent.zoom;
         float maxPosX = cameraComponent.position.x + width + cameraComponent.pixelBuffer;
         float minPosX = cameraComponent.position.x - width - cameraComponent.pixelBuffer;
         float minPosY = cameraComponent.position.y - width - cameraComponent.pixelBuffer;
@@ -105,6 +143,7 @@ namespace GameEngine {
 	}
 	void Renderer::EndRender()
 	{
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 

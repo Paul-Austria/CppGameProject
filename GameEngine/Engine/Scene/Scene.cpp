@@ -1,44 +1,105 @@
 #include "Scene.hpp"
 #include <spdlog/spdlog.h>
-#include <Engine/Entities/Entity.hpp>
-
-#include <Engine/Entities/BaseComponents.hpp>
 
 #include "Engine/Renderer/ImGUI/imgui/imgui.h"
 #include "Engine/Renderer/ImGUI/imgui/imgui_internal.h"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/ImGUI/ImGUIStyling.hpp"
+
+
+#include <Engine/Entities/BaseComponents.hpp>
+
+#include <Engine/Utils/Profiling/ProfileInstance.hpp>
+
+
+#include <Engine/Entities/Entity.hpp>
+#include <Engine/ResourceManagement/TextureResourceManager.hpp>
+#include <Engine/Renderer/Renderable.hpp>
+#include <Engine/Core/Window.hpp>
+
 namespace GameEngine {
 	Scene::Scene()
 	{
 		registry = entt::registry();
+		Entity entity = { registry.create(), this };
+		entity.AddComponent<TransformComponent>();
+		auto& tag = entity.AddComponent<TagComponent>();
+		tag.Tag = "Test";
+
+
+		entity.AddComponent<CameraComponent>();
+		entity.AddComponent<Renderable>();
+		DestroyEntity(entity);
+
+
+
 	}
 	Scene::~Scene()
 	{
 		registry.clear();
 	}
+
+
+
+
+	Entity Scene::CreateEntity(const std::string& name)
+	{
+		Entity entity = { registry.create(), this };
+		entity.AddComponent<TransformComponent>();
+		auto& tag = entity.AddComponent<TagComponent>();
+		tag.Tag = name.empty() ? "Entity" : name;
+
+
+	//	entity.AddComponent<GameRenderable>(GameTextureResourceManager::GetInstance()->GetTexture("Tex2"));
+
+
+		return entity;
+	}
+
+	void Scene::DestroyEntity(Entity entity)
+	{
+		registry.destroy(entity);
+	}
+
+
+	template<typename T>
+	void Scene::OnComponentAdded(Entity entity, T& component)
+	{
+	}
+
+
+
 	void Scene::BackgroundUpdate(float deltaTime,bool isRunning)
 	{
 
-		auto renderer = Renderer::GetInstance();
+		ProfileInstance::GetInstance()->StartProfileSession("Renderer");
 
-		renderer->BeginRender(editorCam);
+
+		auto renderer = Renderer::GetInstance();
 		
+		renderer->BeginRender(editorCam, renderTarget);
+
 
 		auto renderData = registry.view<Renderable>();
+		
 		for (auto ent : renderData)
 		{
-			Renderable renderable = registry.get<Renderable>(ent);
-			auto tra = registry.get<TransformComponent>(ent);
+			auto rend = registry.get<Renderable>(ent);
+			auto transform = registry.get<TransformComponent>(ent);
 
-
-			renderer->RenderQuad(renderable, tra, editorCam);
+			renderer->RenderQuad(rend, transform, editorCam);
 		}
 
-		renderer->EndRender();
+		renderer->EndRender(),
+
+
+		ProfileInstance::GetInstance()->EndProfileSession("Renderer");
+
+
 	}
 
 	void Scene::EditorUpdate(float deltaTime) {
+		ProfileInstance::GetInstance()->StartProfileSession("DebugUI");
 		Renderer::GetInstance()->StartImGUI();
 
 		if (ImGui::BeginMainMenuBar())
@@ -135,8 +196,8 @@ namespace GameEngine {
 				ImGuiDockNode* node = ImGui::DockBuilderGetCentralNode(dockspace_id);
 				// we now dock our windows into the docking node we made above
 				ImGui::DockBuilderDockWindow("Down", dock_id_down);
-				ImGui::DockBuilderDockWindow("Left", dock_id_left);
-				ImGui::DockBuilderDockWindow("Center", node->ID);
+				ImGui::DockBuilderDockWindow("Entities", dock_id_left);
+				ImGui::DockBuilderDockWindow("Scene", node->ID);
 				ImGui::DockBuilderDockWindow("Right", dock_id_right);
 
 				ImGui::DockBuilderFinish(dockspace_id);
@@ -151,20 +212,55 @@ namespace GameEngine {
 		ImGui::End();
 
 
-		ImGui::Begin("Left");
-		ImGui::Text("Hello, left!");
+		ImGui::Begin("Entities");
 
-		auto windowWidth = ImGui::GetWindowSize().x;
-		auto textWidth = 150;
+		auto renderData = registry.view<TagComponent>();
 
-		ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+		static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
+	
+		ImGui::BeginTable("table2", 1,flags, ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y));
 
-		ImGui::Button("TestButton", ImVec2(150, 50));
+		ImGui::TableSetupColumn("Name");
+		ImGui::TableHeadersRow();
+		int counter = 0;
+
+		for (auto ent : renderData)
+		{
+			auto tag = registry.get<TagComponent>(ent);
+			ImGui::TableNextRow();
+			
+			ImGui::TableNextColumn();
+			ImGui::BeginGroup();
+			bool selected = false;
+			ImGui::Selectable(tag.Tag.c_str(),&selected,0, ImVec2(ImGui::GetWindowSize().x, 15));
+			ImGui::Separator();
+			ImGui::EndGroup();
+			if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
+				spdlog::info(tag.Tag.c_str());
+			}
+			counter++;
+			
+		}
+		ImGui::EndTable();
+
+
 		ImGui::End();
 
+		 flags = ImGuiWindowFlags_NoScrollbar |ImGuiWindowFlags_NoScrollWithMouse;
+		bool open = true;
+		ImGui::Begin("Scene", &open,flags);
 
-		ImGui::Begin("Center");
-		ImGui::Text("Hello, Center 1");
+		renderTarget.width = ImGui::GetWindowSize().x;
+		renderTarget.height = ImGui::GetWindowSize().y-20;
+		ImGui::Image((void*)renderTarget.ID, ImVec2(renderTarget.width, renderTarget.height));
+		
+		
+		
+		if (ImGui::IsItemHovered()) {
+			UpdateEditorCam(deltaTime);
+		}
+
+
 		ImGui::End();
 
 		ImGui::Begin("Right");
@@ -172,31 +268,41 @@ namespace GameEngine {
 		ImGui::End();
 		Renderer::GetInstance()->EndImGUI();
 
+		ProfileInstance::GetInstance()->EndProfileSession("DebugUI");
 
-		
-
+	//	ProfileInstance::GetInstance()->PrintDataToTerminal();
 	}
 
 
-	Entity Scene::CreateEntity(std::string name)
+	void Scene::UpdateEditorCam(float deltaTime)
 	{
+		float speed = 2;
+		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
+		{
+			editorCam.position.y -= speed;
+		}
+		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
+		{
+			editorCam.position.y += speed;
+		}
+		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
+		{
+			editorCam.position.x += speed;
+		}
+		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
+		{
+			editorCam.position.x -= speed;
+		}
+		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_Q) == GLFW_PRESS)
+		{
+			editorCam.zoom += 0.1f;
+		}
 
-		Entity entity = { registry.create(), this };
-		entity.AddComponent<TransformComponent>();
-		auto& tag = entity.AddComponent<TagComponent>();
-		tag.Tag = name.empty() ? "Entity" : name;
-		return entity;
+		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_E) == GLFW_PRESS)
+		{
+			editorCam.zoom -= 0.1f;
+		}
 	}
 
-
-	template<typename T>
-	inline void Scene::OnComponentAdded(Entity entity, T& component)
-	{
-	}
-
-	void Scene::DestroyEntity(Entity ent)
-	{
-		registry.destroy(ent);
-	}
 
 }

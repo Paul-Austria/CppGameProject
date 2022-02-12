@@ -8,6 +8,8 @@ namespace GameEngine
     class Renderable
     {
     public:
+        Renderable() = default;
+
         Renderable(Texture* texture);
         Renderable(SubTexture* SubTexture);
         ~Renderable();

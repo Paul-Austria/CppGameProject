@@ -66,6 +66,8 @@ namespace GameEngine
     }
     Renderable::Renderable(Texture* texture)
     {
+        this->texture = texture;
+
         float vertices[] = {
             // positions            // texture coords
             0.5f, 0.5f, 0.0f,   // top right

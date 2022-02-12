@@ -2,8 +2,9 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-
+#include "data/DataStructs.hpp"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 
 
@@ -28,9 +29,9 @@ namespace GameEngine {
 
 
 	struct CameraComponent {
-		float zoom = 0;
+		float zoom = 0.5;
 		glm::vec2 position{ 0,0 };
-		unsigned int pixelBuffer = 40;
+		unsigned int pixelBuffer = 120;
 
 
 		CameraComponent() = default;

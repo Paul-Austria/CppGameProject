@@ -1,45 +1,43 @@
 #pragma once
 
-#include <entt/entt.hpp>
 #include <string>
+#include <entt/entt.hpp>
+#include <Engine/Entities/data/DataStructs.hpp>
 #include <Engine/Entities/BaseComponents.hpp>
 
 namespace GameEngine {
+
 	class Entity;
 	class Scene
 	{
 	public:
+		entt::registry registry;
 		Scene();
 		~Scene();
 
 
-		virtual void Init() {};
-		virtual void Update(float Update) {};
+		virtual void Init() = 0;
+		virtual void Update(float Update) = 0;
+
+		Entity CreateEntity(const std::string& name = std::string());
+		void DestroyEntity(Entity entity);
 
 
-		Entity CreateEntity(std::string name);
-
-
-
-		void DestroyEntity(Entity ent);
-
-		template <typename T>
+		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
-
-
 
 	private:
 		friend class Engine;
 		friend class Entity;
+		
+		Texture renderTarget;
 
-
-		CameraComponent editorCam;
 
 		void BackgroundUpdate(float deltaTime, bool isRunning);
 		void EditorUpdate(float deltaTime);
-		entt::registry registry;
-
+		void UpdateEditorCam(float deltaTime);
 
 		bool useEditorCam = true; 
+		CameraComponent editorCam;
 	};
 }

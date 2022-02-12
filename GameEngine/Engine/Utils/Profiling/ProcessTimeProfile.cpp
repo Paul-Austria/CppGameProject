@@ -54,12 +54,16 @@ namespace GameEngine {
 	{
 	
 		spdlog::info("{0} took: {1} ms", name, GetProcessTime());
-		spdlog::info("Children of {0}", name);
-		for (auto it = childProfiles.begin(); it != childProfiles.end(); it++)
+		if (childProfiles.size() > 0)
 		{
-			it->second.PrintData();
+
+			spdlog::info("Children of {0}", name);
+			for (auto it = childProfiles.begin(); it != childProfiles.end(); it++)
+			{
+				it->second.PrintData();
+			}
+			spdlog::info("ENd ofChildren of {0}", name);
 		}
-		spdlog::info("Children of {0}", name);
 
 	}
 	ProcessTimeProfile& ProcessTimeProfile::GetChildProfile(const std::string& name)

@@ -1,14 +1,24 @@
+#pragma once
+
 #include <Engine/Scene/Scene.hpp>
 
-class ExampleScene: public GameEngine::Scene
-{
-public:
-	void Init() {
+#include <Engine/ResourceManagement/TextureResourceManager.hpp>
 
-	}
-	void Update(float Update) {
-	}
 
-private:
+#include <Engine/Utils/Serialisation/TextureLoader.hpp>
+#include <Engine/Entities/Entity.hpp>
 
-};
+
+
+
+namespace TestNamespace {
+	class ExampleScene : public GameEngine::Scene
+	{
+	public:
+		void Init();
+		void Update(float Update);
+
+	private:
+
+	};
+}

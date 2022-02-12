@@ -12,7 +12,7 @@ using namespace std;
 
 int main()
 {
-	auto scene = new ExampleScene();
+	auto scene = new TestNamespace::ExampleScene();
 
 	GameEngine::Engine::GetInstance()->Init(1920/2,1080/2,"Engine",false);
 	GameEngine::Engine::GetInstance()->SetCurrentScene(scene);
