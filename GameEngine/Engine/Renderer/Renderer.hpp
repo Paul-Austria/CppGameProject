@@ -28,7 +28,8 @@ namespace GameEngine {
 		void RenderQuad(Renderable& renderable, const TransformComponent& TransformComponent,const CameraComponent& cameraComponent);
 		void EndRender();
 
-
+		void SetUnitSize(int textureSize) { this->textureSize = textureSize; }
+		int  GetUnitSize() { return textureSize; }
 
 	private:
 		static Renderer* instance;
@@ -38,6 +39,8 @@ namespace GameEngine {
 		unsigned int framebuffer = 0;
 		Texture currentTarget;
 		unsigned int depthbuffer = 0;
+		int textureSize = 128;
+
 
 		static void APIENTRY OpenGlErrorMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
 			const GLchar* message, const void* userParam);

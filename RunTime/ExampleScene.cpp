@@ -14,14 +14,11 @@ namespace TestNamespace {
 	{
 
 		GameEngine::TextureLoader::LoadTexturesByJson("Resources/textureLoader.json");
-		GameEngine::Entity ent = CreateEntity("TestEntity");
-		CreateEntity("TestEntity1");
-		CreateEntity("TestEntity4");
-		CreateEntity("TestEntity5");
-		CreateEntity("TestEntity6");
-		CreateEntity("TestEntity7");
-		CreateEntity("TestEntity8");
+		GameEngine::Entity ent = CreateEntity("RenderENT1");
+		GameEngine::Entity ent2 = CreateEntity("RenderENT2");
 
+		ent2.AddComponent<GameEngine::Renderable>(GameEngine::TextureResourceManager::GetInstance()->GetTexture("Tex1"));
+		ent.GetComponent<GameEngine::TransformComponent>().position = glm::vec3(1, 0, 0);
 		ent.AddComponent<GameEngine::Renderable>(GameEngine::TextureResourceManager::GetInstance()->GetTexture("Tex2"));
 	}
 	void ExampleScene::Update(float Update)

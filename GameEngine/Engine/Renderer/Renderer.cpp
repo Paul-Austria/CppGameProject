@@ -51,6 +51,15 @@ namespace GameEngine {
 		ImGui_ImplGlfw_InitForOpenGL(Window::GetInstance()->GetWindow(), true);
 		ImGui_ImplOpenGL3_Init("#version 130");
 
+
+#ifdef DEBUG
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(OpenGlErrorMessage, 0);
+
+#endif // DEBUG
+
+
         sh = ShaderProgram("Resources/Shaders/Vertex.vs", "Resources/Shaders/Fragment.fs");
 
 
@@ -111,34 +120,44 @@ namespace GameEngine {
 
         sh.useShader();
         
-        float width = renderTarget.width / camera.zoom;
-        float height = renderTarget.height/ camera.zoom;;
-        glm::mat4 projection = glm::ortho(0.0f, width, height, 0.0f, -10000.0f, 10000.0f);
+        float width = renderTarget.width;
+        float height = renderTarget.height;
+        float aspect = 16/9;
+
+        glm::mat4 projection = glm::ortho(-16.0f/9.0f, 16.0f/9.0f,
+            9.0f/16.0f, -9.0f/16.0f,
+            -1000.0f, 1000.0f);
+
         sh.setMat4("projection", projection);
         sh.setMat4("view", camera.GetViewMatrix());
 
 	}
 	void Renderer::RenderQuad(Renderable& renderable, const TransformComponent& TransformComponent, const CameraComponent& cameraComponent)
 	{
-        float width = currentTarget.width / 2.0f / cameraComponent.zoom;
-        float height = currentTarget.height / 2.0f / cameraComponent.zoom;
+        float width = currentTarget.width / 2.0f;
+        float height = currentTarget.height / 2.0f;
         float maxPosX = cameraComponent.position.x + width + cameraComponent.pixelBuffer;
         float minPosX = cameraComponent.position.x - width - cameraComponent.pixelBuffer;
         float minPosY = cameraComponent.position.y - width - cameraComponent.pixelBuffer;
         float maxPosY = cameraComponent.position.y + height + cameraComponent.pixelBuffer;
-        if (TransformComponent.position.x < maxPosX && TransformComponent.position.x > minPosX && TransformComponent.position.y < maxPosY && TransformComponent.position.y > minPosY)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(TransformComponent.position.x + width, TransformComponent.position.y + height, TransformComponent.position.z));
-            model = glm::scale(model, glm::vec3(renderable.GetWidth(), renderable.GetHeight(), 1.0f));
-            sh.setMat4("model", model);
 
-            glBindVertexArray(renderable.GetVAO());
+
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model,  TransformComponent.position/cameraComponent.zoom);
+        model = glm::scale(model, glm::vec3(   ((TransformComponent.scale.x) * renderable.GetWidth() ) / cameraComponent.zoom / textureSize,( (TransformComponent.scale.y) * renderable.GetHeight()) / cameraComponent.zoom / textureSize, 1.0f));
+        sh.setMat4("model", model);
+        sh.setBool("useColor", renderable.UseColor());
+        sh.setVec4("inColor", renderable.GetColor());
+
+        glBindVertexArray(renderable.GetVAO());
+        if (renderable.GetTexture() != nullptr )
+        {
             lastTexture = renderable.GetTexture()->ID;
             renderable.GetTexture()->Bind();
-
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        
 
 	}
 	void Renderer::EndRender()
@@ -150,9 +169,9 @@ namespace GameEngine {
     void APIENTRY Renderer::OpenGlErrorMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
         const GLchar* message, const void* userParam)
     {
-    /*    char* _source;
-        char* _type;
-        char* _severity;
+        const char* _source;
+        const char* _type;
+        const char* _severity;
 
         switch (source)
         {
@@ -246,7 +265,7 @@ namespace GameEngine {
         printf("%d: %s of %s severity, raised from %s: %s\n", id, _type, _severity, _source, message);
 
         
-        */
+       
     }
 
 }

@@ -2,6 +2,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "data/DataStructs.hpp"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -39,8 +40,11 @@ namespace GameEngine {
 
 		glm::mat4 GetViewMatrix()
 		{
-			glm::mat4 view = glm::mat4(1.0f);
-			return glm::translate(view, glm::vec3(-position, 100.0f));
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position,0)) *
+				glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0, 0, 1));
+
+			glm::mat4 m_ViewMatrix = glm::inverse(transform);
+			return m_ViewMatrix;
 		}
 	};
 }

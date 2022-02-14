@@ -33,6 +33,9 @@ set(SOURCES ${SOURCES}
 		Engine/Renderer/Shaders/ShaderProgram.hpp
 		Engine/Renderer/Renderable.hpp
 
+		Engine/Editor/EditorView.hpp
+		
+
 )
 
 set(SOURCES ${SOURCES}
@@ -61,6 +64,8 @@ set(SOURCES ${SOURCES}
 
 		Engine/Renderer/Shaders/ShaderProgram.cpp
 		Engine/Renderer/Renderable.cpp
+		Engine/Editor/EditorView.cpp
+
 
 
 )

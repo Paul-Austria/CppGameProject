@@ -5,12 +5,19 @@ out vec4 color;
 uniform sampler2D texture1;
 uniform vec3 spriteColor;
 
+uniform vec4 inColor;
+uniform bool useColor; 
+
 void main()
-{    
-    vec4 texture = texture(texture1, TexCoords);
-    if(texture.a <= 0)
+{   if(!useColor)
     {
-        discard;
+        vec4 texture = texture(texture1, TexCoords);
+        if(texture.a <= 0)
+        {
+            discard;
+        }
+        color = texture;
+    }else{
+        color = inColor;
     }
-    color = texture;
 }  

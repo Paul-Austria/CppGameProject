@@ -4,6 +4,7 @@
 #include <entt/entt.hpp>
 #include <Engine/Entities/data/DataStructs.hpp>
 #include <Engine/Entities/BaseComponents.hpp>
+#include <Engine/Editor/EditorView.hpp>
 
 namespace GameEngine {
 
@@ -29,9 +30,11 @@ namespace GameEngine {
 	private:
 		friend class Engine;
 		friend class Entity;
-		
-		Texture renderTarget;
+		friend class EditorView;
 
+
+		Texture renderTarget;
+		EditorView editorView;
 
 		void BackgroundUpdate(float deltaTime, bool isRunning);
 		void EditorUpdate(float deltaTime);
