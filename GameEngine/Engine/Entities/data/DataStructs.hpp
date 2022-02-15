@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <Engine/Renderer/Renderable.hpp>
 
 namespace GameEngine
 {
@@ -58,9 +59,6 @@ namespace GameEngine
     };
 
 
-
-
-/*
     struct SubAnimation
     {
         SubAnimation() = default;
@@ -112,7 +110,5 @@ namespace GameEngine
         int currentPosition;
         float timeSpend;
     };
-
-    */
 
 } // namespace Engine

@@ -1,9 +1,10 @@
 #pragma once
-#include <Engine/Entities/data/DataStructs.hpp>
 #include <glm/glm.hpp>
 
 namespace GameEngine
 {
+    struct Texture;
+    struct SubTexture;
 
     class Renderable
     {

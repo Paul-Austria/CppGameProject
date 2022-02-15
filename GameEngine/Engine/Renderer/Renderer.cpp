@@ -122,10 +122,10 @@ namespace GameEngine {
         
         float width = renderTarget.width;
         float height = renderTarget.height;
-        float aspect = 16/9;
-
-        glm::mat4 projection = glm::ortho(-16.0f/9.0f, 16.0f/9.0f,
-            9.0f/16.0f, -9.0f/16.0f,
+        float aspect = width/height;
+        glViewport(0, 0, width, height);
+        glm::mat4 projection = glm::ortho(-1.0f, aspect,
+            1.0f, -height/width,
             -1000.0f, 1000.0f);
 
         sh.setMat4("projection", projection);
@@ -144,8 +144,8 @@ namespace GameEngine {
 
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,  TransformComponent.position/cameraComponent.zoom);
-        model = glm::scale(model, glm::vec3(   ((TransformComponent.scale.x) * renderable.GetWidth() ) / cameraComponent.zoom / textureSize,( (TransformComponent.scale.y) * renderable.GetHeight()) / cameraComponent.zoom / textureSize, 1.0f));
+        model = glm::translate(model,  glm::vec3(TransformComponent.position.x,TransformComponent.position.y,TransformComponent.position.z) / cameraComponent.zoom);
+        model = glm::scale(model, glm::vec3(   ((TransformComponent.scale.x) * renderable.GetWidth() * 0.01) / cameraComponent.zoom,( (TransformComponent.scale.y) * renderable.GetHeight() * 0.01) / cameraComponent.zoom, 1.0f));
         sh.setMat4("model", model);
         sh.setBool("useColor", renderable.UseColor());
         sh.setVec4("inColor", renderable.GetColor());

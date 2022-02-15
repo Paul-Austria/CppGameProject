@@ -1,4 +1,4 @@
-#include "EditorView.hpp"
+﻿#include "EditorView.hpp"
 #include <Engine/Scene/Scene.hpp>
 
 #include "Engine/Renderer/ImGUI/imgui/imgui.h"
@@ -8,6 +8,7 @@
 #include <Engine/Utils/Profiling/ProfileInstance.hpp>
 #include <spdlog/spdlog.h>
 #include <Engine/Entities/Entity.hpp>
+#include <Engine/Entities/data/DataStructs.hpp>
 
 namespace GameEngine {
 	EditorView::EditorView(Scene* currentScene)
@@ -49,6 +50,11 @@ namespace GameEngine {
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Debug"))
+			{
+				ImGui::EndMenu();
+			}
+			ImGui::SetCursorPosX(ImGui::GetWindowSize().x -35);
+			if (ImGui::BeginMenu("PLAY"))
 			{
 				ImGui::EndMenu();
 			}
@@ -109,6 +115,7 @@ namespace GameEngine {
 				auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockspace_id);
 				auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.25f, nullptr, &dockspace_id);
 				auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.25f, nullptr, &dockspace_id);
+				auto dock_id_up = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.075f, nullptr, &dockspace_id);
 
 				ImGuiDockNode* node = ImGui::DockBuilderGetCentralNode(dockspace_id);
 				// we now dock our windows into the docking node we made above
@@ -116,6 +123,7 @@ namespace GameEngine {
 				ImGui::DockBuilderDockWindow("Entities", dock_id_left);
 				ImGui::DockBuilderDockWindow("Scene", node->ID);
 				ImGui::DockBuilderDockWindow("Entity Info", dock_id_right);
+				ImGui::DockBuilderDockWindow("Play", dock_id_up);
 
 				ImGui::DockBuilderFinish(dockspace_id);
 			}
@@ -123,6 +131,16 @@ namespace GameEngine {
 
 		ImGui::End();
 
+		/*
+		ImGuiWindowClass window_class;
+		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+		ImGui::SetNextWindowClass(&window_class);
+		ImGui::Begin("Play");
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 10);
+
+		ImGui::Button("Play", ImVec2(40, ImGui::GetWindowSize().y));
+		ImGui::End();
+		*/
 
 		ImGui::Begin("Down");
 		ImGui::Text("Hello, down!");
@@ -148,7 +166,7 @@ namespace GameEngine {
 
 			ImGui::TableNextColumn();
 			ImGui::BeginGroup();
-			bool selected = false;
+			bool selected = ent == currentEntity;
 			ImGui::Selectable(tag.Tag.c_str(), &selected, 0, ImVec2(ImGui::GetWindowSize().x, 15));
 			ImGui::Separator();
 			ImGui::EndGroup();
@@ -180,7 +198,7 @@ namespace GameEngine {
 		ImGui::Begin("Scene", &open, flags);
 
 		scene->renderTarget.width = ImGui::GetWindowSize().x;
-		scene->renderTarget.height = ImGui::GetWindowSize().y - 20;
+		scene->renderTarget.height = ImGui::GetWindowSize().y - 40;
 		ImGui::Image((void*)scene->renderTarget.ID, ImVec2(scene->renderTarget.width, scene->renderTarget.height));
 
 
@@ -282,9 +300,16 @@ namespace GameEngine {
 			{
 				if (!scene->registry.all_of<Renderable>(currentEntity))
 				{
-					if (ImGui::MenuItem("AddRenderable"))
+					if (ImGui::MenuItem("Add Renderable"))
 					{
 						scene->registry.emplace<Renderable>(currentEntity,50,50);
+					}
+					
+				}
+				if (!scene->registry.all_of<Animator>(currentEntity))
+				{
+					if (ImGui::MenuItem("Add Animator"))
+					{
 					}
 				}
 
@@ -292,7 +317,11 @@ namespace GameEngine {
 			}
 
 
-			if (ImGui::Button("Delete", ImVec2(ImGui::GetWindowSize().x, 20)))
+
+			ImGui::Separator();
+
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 40);
+			if (ImGui::Button("Delete Entity", ImVec2(ImGui::GetWindowSize().x, 25)))
 			{
 				scene->registry.destroy(currentEntity);
 				entitySelected = false;

@@ -1,5 +1,6 @@
 #include "Renderable.hpp"
 #include <GL/glew.h>
+#include <Engine/Entities/data/DataStructs.hpp>
 
 namespace GameEngine
 {
