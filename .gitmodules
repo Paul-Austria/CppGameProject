@@ -16,3 +16,6 @@
 [submodule "GameEngine/Engine/Renderer/ImGUI/imgui"]
 	path = GameEngine/Engine/Renderer/ImGUI/imgui
 	url = git@github.com:ocornut/imgui.git
+[submodule "Thirdparty/box2d"]
+	path = Thirdparty/box2d
+	url = https://github.com/erincatto/box2d.git
