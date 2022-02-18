@@ -10,11 +10,22 @@
 #include <Engine/Entities/Entity.hpp>
 #include <Engine/Entities/data/DataStructs.hpp>
 #include <Engine/ResourceManagement/TextureResourceManager.hpp>
+#include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>
+#include <Engine/Engine.hpp>
 
 namespace GameEngine {
 	EditorView::EditorView(Scene* currentScene)
 	{
 		scene = currentScene;
+	}
+
+	void EditorView::CreateProject()
+	{
+	}
+
+	void EditorView::SaveProject()
+	{
+		ProjectSerialisation::SerializeProject(Engine::GetInstance()->currentProject);
 	}
 
 	void EditorView::EditorUpdate(float deltaTime) {
@@ -25,12 +36,22 @@ namespace GameEngine {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New Projects"))
+				if (ImGui::MenuItem("New Project"))
 				{
+					CreateProject();
+				}
+				if (ImGui::MenuItem("Open Project"))
+				{
+
+				}
+				if (ImGui::MenuItem("Save Poject"))
+				{
+					SaveProject();
 				}
 				if (ImGui::MenuItem("New Scene"))
 				{
 				}
+
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Settings"))

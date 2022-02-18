@@ -22,12 +22,11 @@ namespace GameEngine {
 	class Scene
 	{
 	public:
-		Scene();
+		Scene(const std::string& sceneName = "NewScene");
 		~Scene();
+		Scene(const std::string& Path,bool usePath);
 
 
-		virtual void Init() = 0;
-		virtual void Update(float Update) = 0;
 
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
@@ -66,6 +65,7 @@ namespace GameEngine {
 
 		entt::registry registry;
 
+		std::string sceneName;
 
 #ifdef DEBUG
 		entt::registry saveRegistry;

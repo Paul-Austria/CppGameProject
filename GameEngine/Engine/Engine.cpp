@@ -16,20 +16,26 @@ namespace GameEngine {
     {
         delete instance;
     }
-    void Engine::Init(int widht, int height,const std::string& title, bool isFullScreen)
+    void Engine::Init(int widht, int height,const std::string& title , const std::string& ProjectPath, bool isFullScreen)
     {
         Window* window = Window::GetInstance();
    
         window->Init(widht, height, title.c_str(), isFullScreen);
         Renderer::GetInstance()->Init();
-        
+        if (ProjectPath == "")
+        {
+            currentProject = ProjectData();
+            currentScene = std::make_shared<Scene>();
+        }
+        else
+        {
+            LoadProject(ProjectPath);
+        }
     }
 
-    void Engine::SetCurrentScene(Scene* scene)
+    void Engine::SetCurrentScene(std::shared_ptr<Scene> scene)
     {
-        
         this->currentScene = scene;
-        this->currentScene->Init();
     }
 
     void Engine::Loop()
@@ -63,6 +69,10 @@ namespace GameEngine {
         //TODO
     }
 
+    void Engine::LoadProject(const std::string& path)
+    {
+    }
+
     void Engine::DevelopUpdate(float deltaTime)
     {
         if (currentScene != nullptr)
@@ -75,7 +85,6 @@ namespace GameEngine {
     {
         if (currentScene != nullptr)
         {
-            if(isRunning) currentScene->Update(deltaTime);
             currentScene->BackgroundUpdate(deltaTime,isRunning);
         }
     }

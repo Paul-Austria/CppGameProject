@@ -14,6 +14,9 @@ namespace GameEngine {
 
 		void EditorUpdate(float deltaTime);
 
+
+		void CreateProject();
+		void SaveProject();
 	private:
 		Scene* scene;
 		entt::entity currentEntity;

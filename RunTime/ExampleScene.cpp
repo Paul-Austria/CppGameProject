@@ -10,7 +10,7 @@
 #include <Engine/Entities/BaseComponents.hpp>
 #include <Engine/Renderer/Renderable.hpp>
 namespace TestNamespace {
-	void ExampleScene::Init()
+/*	void ExampleScene::Init()
 	{
 
 		GameEngine::TextureLoader::LoadTexturesByJson("Resources/textureLoader.json");
@@ -24,4 +24,7 @@ namespace TestNamespace {
 	void ExampleScene::Update(float Update)
 	{
 	}
+
+
+	*/
 }

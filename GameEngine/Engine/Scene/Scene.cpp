@@ -18,8 +18,9 @@
 #include <Engine/Core/Window.hpp>
 
 namespace GameEngine {
-	Scene::Scene()
+	Scene::Scene(const std::string& sceneName)
 	{
+		this->sceneName = sceneName;
 		registry = entt::registry();
 
 #ifdef DEBUG
@@ -45,6 +46,10 @@ namespace GameEngine {
 	Scene::~Scene()
 	{
 		registry.clear();
+	}
+
+	Scene::Scene(const std::string& Path, bool usePath)
+	{
 	}
 
 
