@@ -48,6 +48,16 @@ namespace GameEngine
         return &textures[name];
     }
 
+    std::vector<std::string> TextureResourceManager::GetFittingTextureNames(const std::string& search)
+    {
+        std::vector<std::string> vec;
+        for (std::unordered_map<std::string, Texture>::iterator it = textures.begin(); it != textures.end(); ++it) {
+            vec.push_back(it->first);
+
+        }
+        return vec;
+    }
+
     int TextureResourceManager::AddSubTexture(std::string name, Texture* texture, glm::vec2 size, glm::vec2 pos)
     {
         float width = size.x;

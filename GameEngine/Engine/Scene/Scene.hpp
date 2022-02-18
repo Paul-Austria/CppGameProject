@@ -9,10 +9,19 @@
 namespace GameEngine {
 
 	class Entity;
+	enum  SceneStatus {
+		Stopped,
+		Running,
+		Paused
+	};
+	enum  ActiveCamera {
+		EditorCamera,
+		GameCamera
+	};
+
 	class Scene
 	{
 	public:
-		entt::registry registry;
 		Scene();
 		~Scene();
 
@@ -27,11 +36,20 @@ namespace GameEngine {
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
 
+
+
+		static void CopyRegsitry(entt::registry& source, entt::registry& target);
+
+
+		void ChangeStatus(SceneStatus status);
+
+		void ChangeActiveCamera(ActiveCamera cam);
+
+
 	private:
 		friend class Engine;
 		friend class Entity;
 		friend class EditorView;
-
 
 		Texture renderTarget;
 		EditorView editorView;
@@ -42,5 +60,16 @@ namespace GameEngine {
 
 		bool useEditorCam = true; 
 		CameraComponent editorCam;
+		SceneStatus status = Stopped;
+		ActiveCamera camera = EditorCamera;
+
+
+		entt::registry registry;
+
+
+#ifdef DEBUG
+		entt::registry saveRegistry;
+#endif // DEBUG
+
 	};
 }

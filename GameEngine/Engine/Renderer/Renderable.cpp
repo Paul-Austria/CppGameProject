@@ -6,16 +6,20 @@ namespace GameEngine
 {
     Renderable::Renderable(SubTexture* subTexture)
     {
+        this->useSubTexture = true;
         this->texture = subTexture->texture;
         float vertices[] = {
             // positions            // texture coords
-            0.5f, 0.5f, 0.0f,   // top right
-            0.5f, -0.5f, 0.0f,  // bottom right
+
             -0.5f, -0.5f, 0.0f, // bottom left
-            -0.5f, 0.5f, 0.0f };
+            -0.5f, 0.5f, 0.0f,
+             0.5f, 0.5f, 0.0f,   // top right
+            0.5f, -0.5f, 0.0f
+        };// bottom right};
         unsigned int indices[] = {
-            0, 1, 3, // first triangle
-            1, 2, 3  // second triangle
+
+            1, 2, 3,  // second triangle
+            0, 1, 3 // first triangle
         };
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -52,6 +56,7 @@ namespace GameEngine
     }
     void Renderable::SetSubTexture(SubTexture* texture)
     {
+        this->useSubTexture = true;
         glBindVertexArray(VAO);
         this->texture = texture->texture;
         glBindBuffer(GL_ARRAY_BUFFER, TBO);
@@ -70,6 +75,7 @@ namespace GameEngine
     }
     Renderable::Renderable(int width, int height)
     {
+        this->useSubTexture = false;
         useColor = true;
         float vertices[] = {
             0.5f, 0.5f, 0.0f,
@@ -83,10 +89,12 @@ namespace GameEngine
 
 
         float textures[] = {
-            1.0f, 1.0f,
+
+            0.0f, 1.0f,
             1.0f, 0.0f,
             0.0f, 0.0f,
-            0.0f, 1.0f
+            1.0f, 1.0f,
+
 
         };
         glGenVertexArrays(1, &VAO);
@@ -120,6 +128,7 @@ namespace GameEngine
     }
     Renderable::Renderable(Texture* texture)
     {
+        this->useSubTexture = false;
         this->texture = texture;
 
         float vertices[] = {

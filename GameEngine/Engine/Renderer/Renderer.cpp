@@ -124,8 +124,9 @@ namespace GameEngine {
         float height = renderTarget.height;
         float aspect = width/height;
         glViewport(0, 0, width, height);
-        glm::mat4 projection = glm::ortho(-1.0f, aspect,
-            1.0f, -height/width,
+        glm::mat4 projection = glm::ortho(
+            -1.0f / camera.zoom, aspect / camera.zoom,
+            1.0f/ camera.zoom, -height/width / camera.zoom,
             -1000.0f, 1000.0f);
 
         sh.setMat4("projection", projection);
@@ -144,14 +145,14 @@ namespace GameEngine {
 
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,  glm::vec3(TransformComponent.position.x,TransformComponent.position.y,TransformComponent.position.z) / cameraComponent.zoom);
-        model = glm::scale(model, glm::vec3(   ((TransformComponent.scale.x) * renderable.GetWidth() * 0.01) / cameraComponent.zoom,( (TransformComponent.scale.y) * renderable.GetHeight() * 0.01) / cameraComponent.zoom, 1.0f));
+        model = glm::translate(model,  glm::vec3(TransformComponent.position.x,TransformComponent.position.y,TransformComponent.position.z));
+        model = glm::scale(model, glm::vec3(   ((TransformComponent.scale.x) * renderable.GetWidth() * 0.01),( (TransformComponent.scale.y) * renderable.GetHeight() * 0.01), 1.0f));
         sh.setMat4("model", model);
         sh.setBool("useColor", renderable.UseColor());
         sh.setVec4("inColor", renderable.GetColor());
 
         glBindVertexArray(renderable.GetVAO());
-        if (renderable.GetTexture() != nullptr )
+        if (renderable.GetTexture() != nullptr)
         {
             lastTexture = renderable.GetTexture()->ID;
             renderable.GetTexture()->Bind();

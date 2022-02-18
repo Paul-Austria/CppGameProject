@@ -1,7 +1,9 @@
 set(SOURCES ${SOURCES}
 		Engine/Engine.hpp
-		Engine/Entities/Entity.hpp
 		Engine/Scene/Scene.hpp
+		Engine/Entities/Entity.hpp
+		Engine/Entities/data/NativeScript.hpp
+
 		Engine/Entities/BaseComponents.hpp
 
 		Engine/Renderer/Renderer.hpp
@@ -34,6 +36,7 @@ set(SOURCES ${SOURCES}
 		Engine/Renderer/Renderable.hpp
 
 		Engine/Editor/EditorView.hpp
+
 		
 
 )
@@ -67,5 +70,5 @@ set(SOURCES ${SOURCES}
 		Engine/Editor/EditorView.cpp
 
 
-
+		Engine/Entities/data/NativeScript.cpp
 )

@@ -19,7 +19,7 @@ namespace TestNamespace {
 
 		ent2.AddComponent<GameEngine::Renderable>(GameEngine::TextureResourceManager::GetInstance()->GetTexture("Tex1"));
 		ent.GetComponent<GameEngine::TransformComponent>().position = glm::vec3(1, 0, 0);
-		ent.AddComponent<GameEngine::Renderable>(GameEngine::TextureResourceManager::GetInstance()->GetTexture("Tex2"));
+		ent.AddComponent<GameEngine::Renderable>(GameEngine::TextureResourceManager::GetInstance()->GetSubTexture("GroundTile1"));
 	}
 	void ExampleScene::Update(float Update)
 	{

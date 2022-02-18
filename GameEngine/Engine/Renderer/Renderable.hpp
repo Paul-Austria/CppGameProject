@@ -31,6 +31,8 @@ namespace GameEngine
         void SetUseColor(bool useColor) { this->useColor = useColor; }
 
         Texture* GetTexture();
+
+        bool UsesSubTexture() { return useSubTexture;  }
     private:
         unsigned int VBO, VAO, EBO, TBO;
         Texture* texture = nullptr;
@@ -39,6 +41,7 @@ namespace GameEngine
         glm::vec4 color = {0,0,0,1};
 
         bool useColor = false;
+        bool useSubTexture = false;
     };
 
 }

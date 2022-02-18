@@ -21,6 +21,13 @@ namespace GameEngine {
 	Scene::Scene()
 	{
 		registry = entt::registry();
+
+#ifdef DEBUG
+		saveRegistry = entt::registry();
+#endif // DEBUG
+
+
+
 		Entity entity = { registry.create(), this };
 		entity.AddComponent<TransformComponent>();
 		auto& tag = entity.AddComponent<TagComponent>();
@@ -29,6 +36,7 @@ namespace GameEngine {
 
 		entity.AddComponent<CameraComponent>();
 		entity.AddComponent<Renderable>();
+		entity.AddComponent<NativeScriptHolder>(std::make_shared<NativeScript>(entity.GetEntity()));
 		DestroyEntity(entity);
 
 
@@ -41,44 +49,69 @@ namespace GameEngine {
 
 
 
-
-	Entity Scene::CreateEntity(const std::string& name)
+	void Scene::ChangeStatus(SceneStatus cStatus)
 	{
-		Entity entity = { registry.create(), this };
-		entity.AddComponent<TransformComponent>();
-		auto& tag = entity.AddComponent<TagComponent>();
-		tag.Tag = name.empty() ? "Entity" : name;
-
-
-	//	entity.AddComponent<GameRenderable>(GameTextureResourceManager::GetInstance()->GetTexture("Tex2"));
-
-
-		return entity;
+		if (cStatus == Running && status == Stopped) {
+			camera = GameCamera;
+			CopyRegsitry(registry, saveRegistry);
+		}
+		else if (status == Running && cStatus == Stopped)
+		{
+			camera = EditorCamera;
+			CopyRegsitry(saveRegistry, registry);
+		}
+		else if (status == Running && cStatus == Paused)
+		{
+			camera = EditorCamera;
+		}
+		this->status = cStatus;
+		
 	}
 
-	void Scene::DestroyEntity(Entity entity)
+	void Scene::ChangeActiveCamera(ActiveCamera cam)
 	{
-		registry.destroy(entity);
+		camera = cam;
 	}
 
 
-	template<typename T>
-	void Scene::OnComponentAdded(Entity entity, T& component)
-	{
-	}
+
 
 
 
 	void Scene::BackgroundUpdate(float deltaTime,bool isRunning)
 	{
 
-		ProfileInstance::GetInstance()->StartProfileSession("Renderer");
 
+		CameraComponent activeCam = editorCam;
+		if (camera == GameCamera)
+		{
+			auto cameraData = registry.view<CameraComponent>();
+			for (auto cam : cameraData)
+			{
+				auto camera = registry.get<CameraComponent>(cam);
+				if (camera.active)
+				{
+					activeCam = camera;
+					activeCam.position = registry.get<TransformComponent>(cam).position;
+					break;
+				}
+
+			}
+		}
+
+
+		auto nativeScripts = registry.view<NativeScriptHolder>();
+
+		for (auto ent : nativeScripts)
+		{
+			registry.get<NativeScriptHolder>(ent).nativeScript->Update(deltaTime);
+		}
+
+		ProfileInstance::GetInstance()->StartProfileSession("Renderer");
 
 		auto renderer = Renderer::GetInstance();
 		
-		renderer->BeginRender(editorCam, renderTarget);
-
+		renderer->BeginRender(activeCam, renderTarget);
 
 		auto renderData = registry.view<Renderable>();
 		
@@ -87,7 +120,7 @@ namespace GameEngine {
 			auto rend = registry.get<Renderable>(ent);
 			auto transform = registry.get<TransformComponent>(ent);
 
-			renderer->RenderQuad(rend, transform, editorCam);
+			renderer->RenderQuad(rend, transform, activeCam);
 		}
 
 		renderer->EndRender(),
@@ -127,14 +160,77 @@ namespace GameEngine {
 		}
 		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_Q) == GLFW_PRESS)
 		{
-			editorCam.zoom += 0.1f;
+			editorCam.zoom += 0.01f;
 		}
 
 		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_E) == GLFW_PRESS)
 		{
-			editorCam.zoom -= 0.1f;
+			editorCam.zoom -= 0.01f;
 		}
 	}
+
+
+
+#pragma region  ENTT_UTILS
+
+
+
+
+	Entity Scene::CreateEntity(const std::string& name)
+	{
+		Entity entity = { registry.create(), this };
+		entity.AddComponent<TransformComponent>();
+		auto& tag = entity.AddComponent<TagComponent>();
+		tag.Tag = name.empty() ? "Entity" : name;
+
+
+		//	entity.AddComponent<GameRenderable>(GameTextureResourceManager::GetInstance()->GetTexture("Tex2"));
+
+
+		return entity;
+	}
+
+	void Scene::DestroyEntity(Entity entity)
+	{
+		registry.destroy(entity);
+	}
+
+	void Scene::CopyRegsitry(entt::registry& source, entt::registry& target)
+	{
+		target.clear();
+		target = entt::registry();
+
+		auto v = source.view<TagComponent>();
+		for (auto en : v)
+		{
+			auto enti = target.create();
+			auto tagC = source.get<TagComponent>(en);
+			auto tran = source.get<TransformComponent>(en);
+			target.emplace<TagComponent>(enti,tagC.Tag);
+			target.emplace<TransformComponent>(enti, tran.position, tran.rotation, tran.scale);
+			if (source.all_of<Renderable>(en))
+			{
+				auto rendercom = source.get<Renderable>(en);
+				target.emplace<Renderable>(enti, rendercom);
+			}
+			if (source.all_of<CameraComponent>(en))
+			{
+				auto rendercom = source.get<CameraComponent>(en);
+				target.emplace<CameraComponent>(enti, rendercom);
+			}
+		}
+		
+	}
+
+
+
+
+	template<typename T>
+	void Scene::OnComponentAdded(Entity entity, T& component)
+	{
+	}
+
+#pragma endregion
 
 
 }

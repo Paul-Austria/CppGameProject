@@ -2,7 +2,7 @@
 
 
 #include "imgui/imgui.h"
-
+#include <string>
 class ImGUIStyling
 {
 public:
@@ -11,6 +11,13 @@ public:
 
 
 
+	static void CenterText(const std::string& text)
+	{
+		auto windowWidth = ImGui::GetWindowSize().x;
+		auto textWidth = ImGui::CalcTextSize(text.c_str()).x;
+		ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
+		ImGui::Text(text.c_str());
+	}
 	static void LightTheme()
 	{
 		ImGuiStyle* style = &ImGui::GetStyle();

@@ -5,6 +5,8 @@
 #include <vector>
 #include <unordered_map>
 #include <Engine/Renderer/Renderable.hpp>
+#include <memory>
+#include "NativeScript.hpp"
 
 namespace GameEngine
 {
@@ -110,5 +112,24 @@ namespace GameEngine
         int currentPosition;
         float timeSpend;
     };
+
+
+
+
+  
+
+   
+    struct NativeScriptHolder {
+        std::shared_ptr<NativeScript> nativeScript = nullptr;
+
+        NativeScriptHolder(std::shared_ptr<NativeScript> script) : nativeScript(script) {
+
+        }
+
+        ~NativeScriptHolder() {
+        }
+    };
+
+
 
 } // namespace Engine

@@ -30,17 +30,18 @@ namespace GameEngine {
 
 
 	struct CameraComponent {
-		float zoom = 0.5;
+		float zoom = 1;
 		glm::vec2 position{ 0,0 };
 		unsigned int pixelBuffer = 120;
 
+		bool active  = false;
 
 		CameraComponent() = default;
 		~CameraComponent() = default;
 
 		glm::mat4 GetViewMatrix()
 		{
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position,0)) *
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position ,0)) *
 				glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0, 0, 1));
 
 			glm::mat4 m_ViewMatrix = glm::inverse(transform);

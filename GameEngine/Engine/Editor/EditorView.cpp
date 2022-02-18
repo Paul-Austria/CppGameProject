@@ -9,6 +9,7 @@
 #include <spdlog/spdlog.h>
 #include <Engine/Entities/Entity.hpp>
 #include <Engine/Entities/data/DataStructs.hpp>
+#include <Engine/ResourceManagement/TextureResourceManager.hpp>
 
 namespace GameEngine {
 	EditorView::EditorView(Scene* currentScene)
@@ -24,7 +25,10 @@ namespace GameEngine {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New"))
+				if (ImGui::MenuItem("New Projects"))
+				{
+				}
+				if (ImGui::MenuItem("New Scene"))
 				{
 				}
 				ImGui::EndMenu();
@@ -54,10 +58,8 @@ namespace GameEngine {
 				ImGui::EndMenu();
 			}
 			ImGui::SetCursorPosX(ImGui::GetWindowSize().x -35);
-			if (ImGui::BeginMenu("PLAY"))
-			{
-				ImGui::EndMenu();
-			}
+			
+
 
 			ImGui::EndMainMenuBar();
 		}
@@ -113,13 +115,15 @@ namespace GameEngine {
 				//   window ID to split, direction, fraction (between 0 and 1), the final two setting let's us choose which id we want (which ever one we DON'T set as NULL, will be returned by the function)
 				//                                                              out_id_at_dir is the id of the node in the direction we specified earlier, out_id_at_opposite_dir is in the opposite direction
 				auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockspace_id);
+				auto dock_id_down2 = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockspace_id);
 				auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.25f, nullptr, &dockspace_id);
 				auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.25f, nullptr, &dockspace_id);
 				auto dock_id_up = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.075f, nullptr, &dockspace_id);
 
 				ImGuiDockNode* node = ImGui::DockBuilderGetCentralNode(dockspace_id);
 				// we now dock our windows into the docking node we made above
-				ImGui::DockBuilderDockWindow("Down", dock_id_down);
+				ImGui::DockBuilderDockWindow("Resource Managmenet", dock_id_down);
+				ImGui::DockBuilderDockWindow("File Browser", dock_id_down2);
 				ImGui::DockBuilderDockWindow("Entities", dock_id_left);
 				ImGui::DockBuilderDockWindow("Scene", node->ID);
 				ImGui::DockBuilderDockWindow("Entity Info", dock_id_right);
@@ -131,27 +135,116 @@ namespace GameEngine {
 
 		ImGui::End();
 
-		/*
-		ImGuiWindowClass window_class;
-		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
-		ImGui::SetNextWindowClass(&window_class);
-		ImGui::Begin("Play");
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 10);
 
-		ImGui::Button("Play", ImVec2(40, ImGui::GetWindowSize().y));
+		ImGui::Begin("Resource Managmenet");	
+
+
+		static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
+
+		
+
+		if (ImGui::CollapsingHeader("Textures"))
+		{
+			int columnSize = (int)ImGui::GetWindowWidth() / 130;
+
+
+			ImGui::Columns(columnSize, "Textures", false);
+		
+			for (auto texture : TextureResourceManager::GetInstance()->textures)
+			{
+
+				if (ImGui::ImageButton((void*)texture.second.ID, ImVec2(130, 130)))
+				{
+
+				}
+				auto windowWidth = ImGui::GetWindowWidth() / columnSize;
+				auto textWidth = ImGui::CalcTextSize(texture.first.c_str()).x;
+				ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f + ImGui::GetCursorPosX());
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 15);
+				ImGui::Text(texture.first.c_str());
+				ImGui::NextColumn();
+			}
+		}
+		
+
+
+		
+		if (ImGui::CollapsingHeader("SubTextures"))
+		{
+			int columnSize = (int)ImGui::GetWindowWidth() / 130;
+
+
+
+			ImGui::Columns(columnSize, "SubTextures", false);
+
+			for (auto texture : TextureResourceManager::GetInstance()->subTextures)
+			{
+
+				if (ImGui::ImageButton((void*)texture.second.texture->ID, ImVec2(130, 130))) {
+
+				}
+
+
+				auto windowWidth = ImGui::GetWindowWidth() / columnSize;
+				auto textWidth = ImGui::CalcTextSize(texture.first.c_str()).x;
+				ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f + ImGui::GetCursorPosX());
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 15);
+				ImGui::Text(texture.first.c_str());
+				ImGui::NextColumn();
+			}
+		}
+
+
+
 		ImGui::End();
-		*/
-
-		ImGui::Begin("Down");
-		ImGui::Text("Hello, down!");
-		ImGui::End();
-
 
 		ImGui::Begin("Entities");
 
+		ImGUIStyling::CenterText("Scene");
+
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1, 0, 0, 1));
+		if (scene->status == Stopped)
+		{
+			if (ImGui::Button("PLAY", ImVec2(ImGui::GetWindowSize().x, 20)))
+			{
+				scene->ChangeStatus(Running);
+			}
+		}
+		if (scene->status == Running || scene->status == Paused)
+		{
+			if (ImGui::Button("STOP", ImVec2(ImGui::GetWindowSize().x/2-7, 20)))
+			{
+				scene->ChangeStatus(Stopped);
+			}
+			ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + ImGui::GetWindowSize().x / 2 + 2, ImGui::GetCursorPosY() - 24));
+			if (scene->status != Paused)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 1, 0, 1));
+				if (ImGui::Button("Pause", ImVec2(ImGui::GetWindowSize().x / 2 - 7, 20)))
+				{
+					scene->ChangeStatus(Paused);
+				}
+				ImGui::PopStyleColor();
+			}
+			if (scene->status == Paused)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0.1, 1, 1));
+				if (ImGui::Button("unPause", ImVec2(ImGui::GetWindowSize().x / 2 - 7, 20)))
+				{
+					scene->ChangeStatus(Running);
+				}
+				ImGui::PopStyleColor();
+			}
+		}
+		ImGui::PopStyleColor();
+
+		ImGui::Separator();
+
+		ImGUIStyling::CenterText("Entities");
+
 		auto renderData = scene->registry.view<TagComponent>();
 
-		static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
+		flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
 
 		ImGui::BeginTable("table2", 1, flags, ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y));
 
@@ -210,7 +303,12 @@ namespace GameEngine {
 
 		ImGui::End();
 
+	
 		ImGui::Begin("Entity Info");
+
+
+
+
 		if (entitySelected)
 		{
 			auto string = scene->registry.get<TagComponent>(currentEntity).Tag;
@@ -294,6 +392,26 @@ namespace GameEngine {
 
 			}
 
+			if(scene->registry.all_of<CameraComponent>(currentEntity))
+			{
+				if (ImGui::CollapsingHeader("Camera"))
+				{
+					auto cam = scene->registry.get<CameraComponent>(currentEntity);
+					ImGui::Checkbox("Active", &cam.active);
+					ImGui::DragFloat("Zoom", &cam.zoom);
+
+					scene->registry.get<CameraComponent>(currentEntity) = cam;
+					
+					if (ImGui::Button("Delete Camera", ImVec2(ImGui::GetWindowSize().x, 20)))
+					{
+						scene->registry.remove<CameraComponent>(currentEntity);
+
+					}
+				}
+
+
+			}
+
 
 			
 			if (ImGui::BeginPopupContextWindow())
@@ -310,6 +428,14 @@ namespace GameEngine {
 				{
 					if (ImGui::MenuItem("Add Animator"))
 					{
+					}
+				}
+
+				if (!scene->registry.all_of<CameraComponent>(currentEntity))
+				{
+					if (ImGui::MenuItem("Add Camera"))
+					{
+						scene->registry.emplace<CameraComponent>(currentEntity);
 					}
 				}
 

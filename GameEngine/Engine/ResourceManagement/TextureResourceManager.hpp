@@ -7,10 +7,11 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-
+#include <list>
 
 namespace GameEngine
 {
+    class EditorView;
     class TextureResourceManager
     {
     public:
@@ -22,9 +23,13 @@ namespace GameEngine
         SubTexture* GetSubTexture(std::string name);
         Texture* GetTexture(std::string name);
 
+        std::vector<std::string> GetFittingTextureNames(const std::string& search);
 
 
     private:
+
+        friend class EditorView;
+
         std::unordered_map<std::string, Texture> textures;
         std::unordered_map<std::string, SubTexture> subTextures;
 
