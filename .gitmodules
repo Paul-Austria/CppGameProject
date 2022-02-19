@@ -19,3 +19,6 @@
 [submodule "Thirdparty/box2d"]
 	path = Thirdparty/box2d
 	url = https://github.com/erincatto/box2d.git
+[submodule "Thirdparty/yaml-cpp"]
+	path = Thirdparty/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git

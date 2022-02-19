@@ -22,7 +22,7 @@ namespace GameEngine {
 	class Scene
 	{
 	public:
-		Scene(const std::string& sceneName = "NewScene");
+		Scene(const std::string& sceneName = "New Scene");
 		~Scene();
 		Scene(const std::string& Path,bool usePath);
 
@@ -49,6 +49,7 @@ namespace GameEngine {
 		friend class Engine;
 		friend class Entity;
 		friend class EditorView;
+		friend class ProjectSerialisation;
 
 		Texture renderTarget;
 		EditorView editorView;

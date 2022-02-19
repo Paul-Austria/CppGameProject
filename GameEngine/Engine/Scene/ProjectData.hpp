@@ -24,9 +24,12 @@ namespace GameEngine {
 		void LoadScene(const std::string& name);
 
 		void SetCurrentScene(const std::string& name);
+
+		std::shared_ptr<Scene> CreateNewScene(const std::string& name);
 	private:
 
 		friend class Engine;
+		friend class ProjectSerialisation;
 
 		std::string Path = "D:/PR/GameEngineTesting/TestProject";
 		std::string Name = "New Project";

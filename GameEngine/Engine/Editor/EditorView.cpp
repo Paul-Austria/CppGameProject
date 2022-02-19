@@ -10,7 +10,7 @@
 #include <Engine/Entities/Entity.hpp>
 #include <Engine/Entities/data/DataStructs.hpp>
 #include <Engine/ResourceManagement/TextureResourceManager.hpp>
-#include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>
+#include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>c
 #include <Engine/Engine.hpp>
 
 namespace GameEngine {
@@ -221,7 +221,10 @@ namespace GameEngine {
 
 		ImGui::Begin("Entities");
 
-		ImGUIStyling::CenterText("Scene");
+		ImGui::InputText("scene Name", scene->sceneName.data(),scene->sceneName.size());
+
+
+
 
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1, 0, 0, 1));
 		if (scene->status == Stopped)

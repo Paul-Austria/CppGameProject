@@ -25,7 +25,7 @@ namespace GameEngine {
         if (ProjectPath == "")
         {
             currentProject = ProjectData();
-            currentScene = std::make_shared<Scene>();
+            currentScene = currentProject.CreateNewScene("New Scene");
         }
         else
         {
