@@ -94,6 +94,15 @@ namespace GameEngine {
 			subObject["transformation"] = positionData;
 
 
+			if (scene->registry.all_of<CameraComponent>(ent))
+			{
+				json camera;
+				auto cam = scene->registry.get<CameraComponent>(ent);
+				camera["active"] = cam.active;
+				camera["zoom"] = cam.zoom;
+				subObject["camera"] = camera;
+			}
+
 			if (scene->registry.all_of<Renderable>(ent))
 			{
 				json renderable;
@@ -164,6 +173,39 @@ namespace GameEngine {
 		for (auto enti : j["entities"])
 		{
 			auto ent = scene->CreateEntity(enti["name"]);
+			TransformComponent& transformation = ent.GetComponent<TransformComponent>();
+
+			transformation.position.x = enti["transformation"]["position"]["x"].get<float>();
+			transformation.position.y = enti["transformation"]["position"]["y"].get<float>();
+			transformation.position.z = enti["transformation"]["position"]["z"].get<float>();
+
+			transformation.rotation = enti["transformation"]["rotation"].get<float>();
+
+			transformation.scale.x = enti["transformation"]["scale"]["x"].get<float>();
+			transformation.scale.y = enti["transformation"]["scale"]["y"].get<float>();
+
+			if (enti.contains("camera")) {
+				CameraComponent& camera = ent.AddComponent<CameraComponent>();
+				camera.active = enti["camera"]["active"].get<bool>();
+				camera.zoom = enti["camera"]["zoom"].get<float>();
+			}
+			if (enti.contains("renderable"))
+			{
+				Renderable& renderable = ent.AddComponent<Renderable>(50,50);
+				json rend = enti["renderable"];
+
+				renderable.SetUseColor(rend["useColor"].get<bool>());
+				renderable.SetWidth(rend["width"].get<int>());
+				renderable.SetHeight(rend["height"].get<int>());
+
+				glm::vec4 col = { 
+					rend["color"]["r"].get<float>(),
+					rend["color"]["g"].get<float>(),
+					rend["color"]["b"].get<float>(),
+					rend["color"]["a"].get<float>() };
+
+				renderable.SetColor(col);
+			}
 		}
 
 		return scene;

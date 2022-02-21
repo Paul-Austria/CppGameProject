@@ -30,7 +30,7 @@ namespace GameEngine {
 		template<typename T>
 		bool HasComponent()
 		{
-			return false;
+			return m_Scene->registry.all_of<T>(m_EntityHandle);
 		}
 
 		template<typename T>
