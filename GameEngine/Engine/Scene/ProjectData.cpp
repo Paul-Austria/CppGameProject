@@ -20,6 +20,13 @@ namespace GameEngine {
 	}
 	void ProjectData::SetCurrentScene(const std::string& name)
 	{
+		if (LoadedScenes.find(name) != LoadedScenes.end())
+		{
+			Engine::GetInstance()->SetCurrentScene(LoadedScenes[name]);
+		}
+	}
+	int ProjectData::UnloadScene(const std::string& name) {
+		return 0;
 	}
 	std::shared_ptr<Scene> ProjectData::CreateNewScene(const std::string& name)
 	{

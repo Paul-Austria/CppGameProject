@@ -22,7 +22,7 @@ namespace GameEngine {
 	class Scene
 	{
 	public:
-		Scene(const std::string& sceneName = "New Scene");
+		Scene(const std::string& sceneName = "New_Scene");
 		~Scene();
 		Scene(const std::string& Path,bool usePath);
 

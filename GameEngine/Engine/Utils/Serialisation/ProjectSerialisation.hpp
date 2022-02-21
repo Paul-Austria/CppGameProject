@@ -17,7 +17,13 @@ namespace GameEngine {
 
 		static int SerializeProject(ProjectData& projectToSave);
 
+		static ProjectData DeserializeProject(const std::string& name);
+		static std::shared_ptr<Scene> LoadScene(const std::string& path);
+
 	private:
 		static json SerializeScene(std::shared_ptr<Scene> scene);
+
+		static std::string GetFileData(const std::string& path);
+
 	};
 }

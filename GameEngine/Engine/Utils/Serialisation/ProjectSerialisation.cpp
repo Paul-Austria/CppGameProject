@@ -9,6 +9,7 @@
 #include <sstream>
 
 #include <Engine/Scene/Scene.hpp>
+#include <Engine/Entities/Entity.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -18,6 +19,8 @@
 using json = nlohmann::json;
 
 namespace GameEngine {
+#pragma region Serialize
+
 	int ProjectSerialisation::SerializeProject(ProjectData& projectToSave)
 	{
 		std::string path = projectToSave.GetPath();
@@ -25,8 +28,8 @@ namespace GameEngine {
 		json j;
 
 		j["name"] = projectToSave.GetName();
-
-		std::time_t t = std::time(0);  
+		j["topScene"] = projectToSave.GetTopScene();
+		std::time_t t = std::time(0);
 		std::stringstream ss;
 
 		ss << std::localtime(&t);
@@ -37,13 +40,13 @@ namespace GameEngine {
 		for (auto scene : projectToSave.LoadedScenes)
 		{
 			json jb;
-			jb["SceneFile"] = scene.first + ".scjson";
-			std::ofstream outScene(path +"/" + scene.first + ".scjson");
+			jb["sceneFile"] = scene.first;
+			std::ofstream outScene(path + "/" + scene.first + ".scjson");
 			std::string out = SerializeScene(scene.second).dump();
 			outScene << out;
 			subObjects.push_back(jb);
 		}
-		j["Scenes"] = subObjects;
+		j["scenes"] = subObjects;
 
 		std::string output = j.dump();
 		std::ofstream file(path + "/Project.json");
@@ -71,24 +74,24 @@ namespace GameEngine {
 			auto transform = scene->registry.get<TransformComponent>(ent);
 
 			json pos;
-			pos["X"] = transform.position.x;
-			pos["Y"] = transform.position.y;
-			pos["Z"] = transform.position.z;
+			pos["x"] = transform.position.x;
+			pos["y"] = transform.position.y;
+			pos["z"] = transform.position.z;
 
-			positionData["Position"] = pos;
+			positionData["position"] = pos;
 
 
-			positionData["Rotation"] = transform.rotation;
+			positionData["rotation"] = transform.rotation;
 
 			json scale;
 
-			scale["X"] = transform.scale.x;
-			scale["Y"] = transform.scale.y;
+			scale["x"] = transform.scale.x;
+			scale["y"] = transform.scale.y;
 
 
-			positionData["Scale"] = scale;
+			positionData["scale"] = scale;
 
-			subObject["Transformation"] = positionData;
+			subObject["transformation"] = positionData;
 
 
 			if (scene->registry.all_of<Renderable>(ent))
@@ -96,19 +99,19 @@ namespace GameEngine {
 				json renderable;
 
 				auto rend = scene->registry.get<Renderable>(ent);
-				renderable["Height"] = rend.GetHeight();
-				renderable["Width"] = rend.GetWidth();
+				renderable["height"] = rend.GetHeight();
+				renderable["width"] = rend.GetWidth();
 				json color;
 
-				color["R"] = rend.GetColor().r;
-				color["G"] = rend.GetColor().g;
-				color["B"] = rend.GetColor().b;
-				color["A"] = rend.GetColor().a;
+				color["r"] = rend.GetColor().r;
+				color["g"] = rend.GetColor().g;
+				color["b"] = rend.GetColor().b;
+				color["a"] = rend.GetColor().a;
 
-				renderable["Color"] = color;
-				renderable["UseColor"] = rend.UseColor();
-				
-				subObject["Renderable"] = renderable;
+				renderable["color"] = color;
+				renderable["useColor"] = rend.UseColor();
+
+				subObject["renderable"] = renderable;
 			}
 
 			subObjects.push_back(subObject);
@@ -117,4 +120,54 @@ namespace GameEngine {
 		j["entities"] = subObjects;
 		return j;
 	}
+	
+#pragma endregion
+#pragma region Desiarilze
+	ProjectData ProjectSerialisation::DeserializeProject(const std::string& path){
+
+		ProjectData data = ProjectData();
+		data.SetPath(path);
+
+		std::string output = GetFileData(path + "/Project.json");
+
+		json j = json::parse(output);
+
+
+		data.SetName(j["name"]);
+		data.SetTopScene(j["topScene"]);
+
+		for(auto j : j["scenes"])
+		{
+			data.Scenes.push_back(j["sceneFile"]);
+		}
+		data.LoadedScenes[j["topScene"]] = LoadScene(path+"/"+data.GetTopScene()+".scjson");
+		return data;
+	}
+
+
+	std::string ProjectSerialisation::GetFileData(const std::string& path)
+	{
+		std::ifstream file(path);
+		std::stringstream buffer;
+		buffer << file.rdbuf();
+		return buffer.str();
+	}
+	std::shared_ptr<Scene> ProjectSerialisation::LoadScene(const std::string& path)
+	{
+		std::string fileData = GetFileData(path);
+		json j = json::parse(fileData);
+
+		auto scene = std::make_shared<Scene>();
+
+		scene->sceneName = j["name"];
+
+		for (auto enti : j["entities"])
+		{
+			auto ent = scene->CreateEntity(enti["name"]);
+		}
+
+		return scene;
+	}
+#pragma endregion
+
 }

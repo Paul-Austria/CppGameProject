@@ -17,6 +17,7 @@ namespace GameEngine {
 
 		void CreateProject();
 		void SaveProject();
+		void OpenProject();
 	private:
 		Scene* scene;
 		entt::entity currentEntity;

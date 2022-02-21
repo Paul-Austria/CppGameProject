@@ -5,6 +5,7 @@
 #include "Scene/Scene.hpp"
 #include "Core/Window.hpp"
 #include "Renderer/Renderer.hpp"
+#include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>
 #include <Engine/Entities/Entity.hpp>
 GameEngine::Engine* GameEngine::Engine::instance = 0;
 
@@ -25,7 +26,7 @@ namespace GameEngine {
         if (ProjectPath == "")
         {
             currentProject = ProjectData();
-            currentScene = currentProject.CreateNewScene("New Scene");
+            currentScene = currentProject.CreateNewScene("New_Scene");
         }
         else
         {
@@ -71,6 +72,8 @@ namespace GameEngine {
 
     void Engine::LoadProject(const std::string& path)
     {
+        currentProject = ProjectSerialisation::DeserializeProject(path);
+    //    currentProject.SetCurrentScene(currentProject,TopScenePath);
     }
 
     void Engine::DevelopUpdate(float deltaTime)
