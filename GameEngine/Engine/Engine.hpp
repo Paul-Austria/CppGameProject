@@ -30,6 +30,7 @@ namespace GameEngine {
 	private:
 
 		friend class EditorView;
+		friend class ContentBrowser;
 
 		void DevelopUpdate(float deltaTime);
 		void SceneUpdate(float deltaTime);

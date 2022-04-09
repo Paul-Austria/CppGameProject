@@ -5,6 +5,7 @@
 #include <Engine/Utils/stb/stb_image.hpp>
 
 #include <filesystem>
+#include <Engine/Engine.hpp>
 GameEngine::TextureResourceManager* GameEngine::TextureResourceManager::instance = 0;
 
 namespace GameEngine
@@ -37,7 +38,7 @@ namespace GameEngine
             spdlog::error("Image file not found at: {0}", directPath);
             return -1;
         }
-        Texture texture = Texture(width, height, data,type);
+        Texture texture = Texture(width, height, data,name,type);
         textures[name] = texture;
         stbi_image_free(data);
 
@@ -45,6 +46,10 @@ namespace GameEngine
     }
     Texture* TextureResourceManager::GetTexture(const std::string& name)
     {
+        if (!TextureExists(name))
+        {
+            LoadTexture(name, Engine::GetInstance()->GetCurrentProject().GetPath()+"/"+name);
+        }
         return &textures[name];
     }
 
@@ -78,7 +83,7 @@ namespace GameEngine
         coords[5] = textureY * pos.y;
         coords[6] = textureX * pos.x;
         coords[7] = textureY * pos.y + textureY;
-        SubTexture subTexture = SubTexture(texture, width, height, coords);
+        SubTexture subTexture = SubTexture(texture, width, height, coords,name);
         subTextures[name] = subTexture;
         return 0;
     }

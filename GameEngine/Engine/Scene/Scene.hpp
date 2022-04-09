@@ -50,6 +50,7 @@ namespace GameEngine {
 		friend class Entity;
 		friend class EditorView;
 		friend class ProjectSerialisation;
+		friend class ContentBrowser;
 
 		Texture renderTarget;
 		EditorView editorView;

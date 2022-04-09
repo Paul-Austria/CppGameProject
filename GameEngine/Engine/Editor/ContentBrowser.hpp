@@ -7,16 +7,14 @@ namespace GameEngine {
 	class ContentBrowser
 	{
 	public:
-		ContentBrowser(EditorView* editor);
 		~ContentBrowser();
 		ContentBrowser() = default;
-		void Render();
+		void Render(EditorView* editor);
 	private:
-		EditorView* editor;
 		std::string rootPath;
 		std::string currentSubPath;
 
 
-		void HandleFileClick(std::string fileName);
+		void HandleFileClick(std::string fileName,EditorView* editor);
 	};
 }

@@ -20,9 +20,11 @@ namespace GameEngine
     {
         unsigned int ID = 0;
         unsigned int width = 10, height = 10;
+        std::string name = "";
         Texture() = default;
-        Texture(unsigned int width, unsigned int height, unsigned char* data, TextureLoadType loadType = nearest)
+        Texture(unsigned int width, unsigned int height, unsigned char* data,std::string name="", TextureLoadType loadType = nearest)
         {
+            this->name = name;
             this->width = width;
             this->height = height;
             // create Texture
@@ -48,8 +50,9 @@ namespace GameEngine
     struct SubTexture
     {
         SubTexture() = default;
-        SubTexture(Texture* mainTexture, unsigned int width, unsigned int height, float coordinates[]) : texture(mainTexture), width(width), height(height)
+        SubTexture(Texture* mainTexture, unsigned int width, unsigned int height, float coordinates[], std::string name) : texture(mainTexture), width(width), height(height)
         {
+            this->name = name;
             for (int i = 0; i < 8; i++)
             {
                 textureCoordinates[i] = coordinates[i];
@@ -57,6 +60,7 @@ namespace GameEngine
         }
         unsigned int width, height;
         float textureCoordinates[8];
+        std::string name = "";
         Texture* texture;
     };
 

@@ -9,11 +9,11 @@
 #include <Engine/ResourceManagement/TextureResourceManager.hpp>
 
 #include <spdlog/spdlog.h>
+#include <entt/entt.hpp>
+#include "Engine/Entities/Entity.hpp"
+#include "Engine/Renderer/Renderable.hpp"
 namespace GameEngine
 {
-	ContentBrowser::ContentBrowser(EditorView* editor) {
-		this->editor = editor;
-	}
 
 
 	ContentBrowser::~ContentBrowser() {
@@ -21,12 +21,31 @@ namespace GameEngine
 	}
 
 
-	void ContentBrowser::HandleFileClick(std::string name)
+	void ContentBrowser::HandleFileClick(std::string name, EditorView* editor)
 	{
-		spdlog::info(name);
+		auto var = editor->entitySelected;
+		auto ent = editor->currentEntity;
+		spdlog::info(var);
+		auto split = StringHelpers::GetExtension(name);
+		if (split == "png"  && var)
+		{
+			
+			if (Engine::GetInstance()->currentScene->registry.all_of<Renderable>(ent))
+			{
+				Renderable& data = Engine::GetInstance()->currentScene->registry.get<Renderable>(ent);
+				data.SetUseColor(false);
+				data.SetTexture(TextureResourceManager::GetInstance()->GetTexture(name));
+			}
+			else
+			{
+				Renderable& data = Engine::GetInstance()->currentScene->registry.emplace<Renderable>(ent,50,50);
+				data.SetUseColor(false);
+				data.SetTexture(TextureResourceManager::GetInstance()->GetTexture(name));
+			}
+		}
 	}
 
-	void ContentBrowser::Render() {
+	void ContentBrowser::Render(EditorView* editor) {
 		auto newPath = Engine::GetInstance()->GetCurrentProject().GetPath();
 		
 		if (newPath != rootPath)
@@ -111,7 +130,7 @@ namespace GameEngine
 				}
 				if (ImGui::ImageButton((void*)textureID, ImVec2(100, 100)))
 				{
-					HandleFileClick(pa);
+					HandleFileClick(currentSubPath + pa,editor);
 				}
 				auto windowWidth = ImGui::GetWindowWidth() / columnSize;
 				auto textWidth = ImGui::CalcTextSize(pa.c_str()).x;

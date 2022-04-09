@@ -17,7 +17,7 @@ namespace GameEngine {
 	EditorView::EditorView(Scene* currentScene)
 	{
 		scene = currentScene;
-		browser = ContentBrowser(this);
+		browser = ContentBrowser();
 	}
 
 	void EditorView::CreateProject()
@@ -174,7 +174,7 @@ namespace GameEngine {
 			ImGui::Begin("Resource Managmenet");
 			static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
 			
-			if(Engine::GetInstance()->projectLoaded)browser.Render();
+			if(Engine::GetInstance()->projectLoaded)browser.Render(this);
 /*
 
 			if (ImGui::CollapsingHeader("Textures"))

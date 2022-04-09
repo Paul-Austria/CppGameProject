@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-
+#include <string>
 namespace GameEngine
 {
     struct Texture;
@@ -16,6 +16,7 @@ namespace GameEngine
         ~Renderable();
         void SetTexture(Texture* texture);
         void SetSubTexture(SubTexture* texture);
+        std::string GetSubTextureName() { return subTextureName; }
         unsigned int GetVAO();
         int GetWidth();
         int GetHeight();
@@ -39,6 +40,8 @@ namespace GameEngine
         int width = 50, height = 50;
         
         glm::vec4 color = {0,0,0,1};
+
+        std::string subTextureName = "";
 
         bool useColor = false;
         bool useSubTexture = false;

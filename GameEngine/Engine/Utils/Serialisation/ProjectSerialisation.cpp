@@ -1,6 +1,6 @@
 #include "ProjectSerialisation.hpp"
 #include <Engine/Scene/ProjectData.hpp>
-
+#include <Engine/ResourceManagement/TextureResourceManager.hpp>
 #include <filesystem>
 #include <fstream>
 
@@ -119,6 +119,20 @@ namespace GameEngine {
 
 				renderable["color"] = color;
 				renderable["useColor"] = rend.UseColor();
+				renderable["usesSubTexture"] = rend.UsesSubTexture();
+
+				if (rend.UsesSubTexture())
+				{
+					renderable["subTextureName"] = rend.GetSubTextureName();
+				}
+				if (rend.GetTexture() != nullptr)
+				{
+					renderable["texture"] = rend.GetTexture()->name;
+				}
+				else
+				{
+					renderable["texture"] = "";
+				}
 
 				subObject["renderable"] = renderable;
 			}
@@ -205,6 +219,16 @@ namespace GameEngine {
 					rend["color"]["a"].get<float>() };
 
 				renderable.SetColor(col);
+				if (rend["usesSubTexture"].get<bool>())
+				{
+					renderable.UsesSubTexture();
+					renderable.SetSubTexture(TextureResourceManager::GetInstance()->GetSubTexture(rend["subTextureName"]));
+				}
+				else if (rend["texture"] != "")
+				{
+					renderable.SetTexture(TextureResourceManager::GetInstance()->GetTexture(rend["texture"]));
+				}
+				
 			}
 		}
 

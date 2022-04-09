@@ -53,9 +53,25 @@ namespace GameEngine
     void Renderable::SetTexture(Texture* texture)
     {
         this->texture = texture;
+        this->useSubTexture = false;
+        float textures[] = {
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f
+
+        };
+
+        glBindBuffer(GL_ARRAY_BUFFER, TBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(textures), textures, GL_STATIC_DRAW);
+
+        // texture coord attribute
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
     }
     void Renderable::SetSubTexture(SubTexture* texture)
     {
+        this->subTextureName = texture->name;
         this->useSubTexture = true;
         glBindVertexArray(VAO);
         this->texture = texture->texture;
@@ -89,12 +105,10 @@ namespace GameEngine
 
 
         float textures[] = {
-
-            0.0f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f,
-            1.0f, 1.0f,
-
+             0.0f, 0.0f,
+             0.0f, 1.0f,
+             1.0f, 1.0f,
+             1.0f, 0.0f
 
         };
         glGenVertexArrays(1, &VAO);
