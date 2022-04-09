@@ -43,11 +43,15 @@ namespace GameEngine
 
         return 0;
     }
-    Texture* TextureResourceManager::GetTexture(std::string name)
+    Texture* TextureResourceManager::GetTexture(const std::string& name)
     {
         return &textures[name];
     }
 
+
+    bool TextureResourceManager::TextureExists(const std::string& search) {
+        return textures.find(search) != textures.end();
+    }
     std::vector<std::string> TextureResourceManager::GetFittingTextureNames(const std::string& search)
     {
         std::vector<std::string> vec;
@@ -78,7 +82,7 @@ namespace GameEngine
         subTextures[name] = subTexture;
         return 0;
     }
-    SubTexture* TextureResourceManager::GetSubTexture(std::string name)
+    SubTexture* TextureResourceManager::GetSubTexture(const std::string& name)
     {
         return &subTextures[name];
     }

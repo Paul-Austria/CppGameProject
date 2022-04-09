@@ -20,8 +20,9 @@ namespace GameEngine
         static TextureResourceManager* GetInstance();
         int LoadTexture(std::string name, std::string path, TextureLoadType type = nearest);
         int AddSubTexture(std::string name, Texture* texture, glm::vec2 size, glm::vec2 pos);
-        SubTexture* GetSubTexture(std::string name);
-        Texture* GetTexture(std::string name);
+        bool TextureExists(const std::string& search);
+        SubTexture* GetSubTexture(const std::string& search);
+        Texture* GetTexture(const std::string& search);
 
         std::vector<std::string> GetFittingTextureNames(const std::string& search);
 

@@ -36,7 +36,7 @@ namespace GameEngine
         auto x = j["Textures"];
         for (auto sub : x)
         {
-            manager->LoadTexture(sub["name"].get<std::string>(), parentPath + sub["path"].get<std::string>());
+            manager->LoadTexture(sub["path"].get<std::string>(), parentPath + sub["path"].get<std::string>());
             counter++;
         }
         spdlog::info("{0} Textures loaded", counter);

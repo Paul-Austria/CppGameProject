@@ -6,6 +6,8 @@
 #include <vector>
 #include <algorithm>
 
+#include <Engine/ResourceManagement/TextureResourceManager.hpp>
+
 #include <spdlog/spdlog.h>
 namespace GameEngine
 {
@@ -36,7 +38,7 @@ namespace GameEngine
 
 		int startY = ImGui::GetCursorPosY();
 		auto split = StringHelpers::Split(currentSubPath, "/");
-
+		split.pop_back();
 		if (ImGui::Button("Root/", ImVec2(ImGui::CalcTextSize("Root/").x+5, 20)))
 		{
 			currentSubPath = "";
@@ -46,11 +48,16 @@ namespace GameEngine
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + size+5);
 		for (auto var : split)
 		{
+			
+			
 			if (ImGui::Button((var+"/").c_str(),ImVec2(ImGui::CalcTextSize((var + "/").c_str()).x+5, 20)))
 			{
+
+				
+
 				auto loc = std::distance(split.begin(), std::find(split.begin(), split.end(), var));
 				currentSubPath = "";
-				for (int i = 0; i <= loc; i++)
+				for (int i = 0; i < loc; i++)
 				{
 					currentSubPath += split.at(i) + "/";
 				}
@@ -88,7 +95,21 @@ namespace GameEngine
 				ImGui::NextColumn();
 			}
 			else {
-				if (ImGui::ImageButton((void*)0, ImVec2(100, 100)))
+				auto extension = StringHelpers::GetExtension(pa);
+				unsigned int textureID = 0;
+				if (extension == "png")
+				{
+					if (TextureResourceManager::GetInstance()->TextureExists(currentSubPath + pa))
+					{
+						textureID = TextureResourceManager::GetInstance()->GetTexture(currentSubPath + pa)->ID;
+					}
+					else
+					{
+						TextureResourceManager::GetInstance()->LoadTexture(currentSubPath + pa, rootPath + "/" + currentSubPath + pa);
+						textureID = TextureResourceManager::GetInstance()->GetTexture(currentSubPath + pa)->ID;
+					}
+				}
+				if (ImGui::ImageButton((void*)textureID, ImVec2(100, 100)))
 				{
 					HandleFileClick(pa);
 				}
