@@ -1,5 +1,6 @@
 #pragma once
 #include <entt/entt.hpp>
+#include "ContentBrowser.hpp"
 
 namespace GameEngine {
 	class Scene;
@@ -19,7 +20,13 @@ namespace GameEngine {
 		void SaveProject();
 		void OpenProject();
 	private:
+		friend class ContentBrowser;
+
 		Scene* scene;
+		bool projectLoaded = false;
+		bool newSceneLoaded = false;
+		ContentBrowser browser;
+
 		entt::entity currentEntity;
 		bool entitySelected = false;
 	};

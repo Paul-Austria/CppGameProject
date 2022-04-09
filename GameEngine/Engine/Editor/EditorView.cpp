@@ -17,6 +17,7 @@ namespace GameEngine {
 	EditorView::EditorView(Scene* currentScene)
 	{
 		scene = currentScene;
+		browser = ContentBrowser(this);
 	}
 
 	void EditorView::CreateProject()
@@ -32,6 +33,8 @@ namespace GameEngine {
 	{
 		Engine::GetInstance()->currentProject = ProjectSerialisation::DeserializeProject("D:/PR/GameEngineTesting/TestProject");
 		Engine::GetInstance()->currentProject.SetCurrentScene(Engine::GetInstance()->currentProject.GetTopScene());
+		Engine::GetInstance()->projectLoaded = true;
+		
 	}
 
 	void EditorView::EditorUpdate(float deltaTime) {
@@ -45,11 +48,14 @@ namespace GameEngine {
 				if (ImGui::MenuItem("New Project"))
 				{
 					CreateProject();
+					newSceneLoaded = true;
+
 				}
 				if (ImGui::MenuItem("Open Project"))
 				{
 					OpenProject();
 					newSceneLoaded = true;
+
 				}
 				if (ImGui::MenuItem("Save Poject"))
 				{
@@ -166,11 +172,10 @@ namespace GameEngine {
 
 
 			ImGui::Begin("Resource Managmenet");
-
-
 			static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
-
-
+			
+			if(Engine::GetInstance()->projectLoaded)browser.Render();
+/*
 
 			if (ImGui::CollapsingHeader("Textures"))
 			{
@@ -223,7 +228,7 @@ namespace GameEngine {
 				}
 			}
 
-
+*/
 
 			ImGui::End();
 

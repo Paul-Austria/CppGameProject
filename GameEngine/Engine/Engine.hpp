@@ -25,6 +25,8 @@ namespace GameEngine {
 
 		void LoadProject(const std::string& path);
 
+		ProjectData& GetCurrentProject() { return currentProject; }
+
 	private:
 
 		friend class EditorView;
@@ -40,6 +42,7 @@ namespace GameEngine {
 		std::shared_ptr<Scene> currentScene;
 		float LastTime = 0;
 		bool isRunning = true;
+		bool projectLoaded = false;
 
 	};
 }

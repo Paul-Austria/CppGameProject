@@ -74,6 +74,8 @@ namespace GameEngine {
     {
         currentProject = ProjectSerialisation::DeserializeProject(path);
     //    currentProject.SetCurrentScene(currentProject,TopScenePath);
+        projectLoaded = true;
+
     }
 
     void Engine::DevelopUpdate(float deltaTime)

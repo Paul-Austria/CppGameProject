@@ -39,9 +39,12 @@ set(SOURCES ${SOURCES}
 		Engine/Renderer/Renderable.hpp
 
 		Engine/Editor/EditorView.hpp
+		Engine/Editor/ContentBrowser.hpp
 
 		Engine/ResourceManagement/TextureResourceManager.hpp
 
+
+		Engine/Utils/StringHelpers.hpp
 
 		
 
@@ -78,6 +81,9 @@ set(SOURCES ${SOURCES}
 
 		Engine/Renderer/Shaders/ShaderProgram.cpp
 		Engine/Renderer/Renderable.cpp
+		
 		Engine/Editor/EditorView.cpp
+		Engine/Editor/ContentBrowser.cpp
+
 
 )

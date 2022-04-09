@@ -21,7 +21,7 @@ namespace GameEngine {
 		void SetName(const std::string& Name) { this->Name = Name; }
 		std::string GetName() { return Name; }
 
-		std::string GetPath() { return Path; }
+		std::string& GetPath() { return Path; }
 		void LoadScene(const std::string& name);
 
 		void SetCurrentScene(const std::string& name);
