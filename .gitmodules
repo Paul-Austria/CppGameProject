@@ -22,3 +22,9 @@
 [submodule "Thirdparty/yaml-cpp"]
 	path = Thirdparty/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "Thirdparty/sol2"]
+	path = Thirdparty/sol2
+	url = https://github.com/Paul-Austria/sol2.git
+[submodule "Thirdparty/--lua-cmake"]
+	path = Thirdparty/--lua-cmake
+	url = https://github.com/walterschell/Lua.git
