@@ -7,6 +7,12 @@
 #include "Renderer/Renderer.hpp"
 #include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>
 #include <Engine/Entities/Entity.hpp>
+
+#define SOL_ALL_SAFETIES_ON 1
+#include <Engine/sol/sol.hpp>
+#include <Engine/sol/assert.hpp>
+#include <iostream>
+
 GameEngine::Engine* GameEngine::Engine::instance = 0;
 
 namespace GameEngine {
@@ -32,6 +38,13 @@ namespace GameEngine {
         {
             LoadProject(ProjectPath);
         }
+
+
+        sol::state lua;
+        // open some common libraries
+        lua.open_libraries(sol::lib::base, sol::lib::package);
+        lua.script("print('Hello world from lua')");
+      
     }
 
     void Engine::SetCurrentScene(std::shared_ptr<Scene> scene)
@@ -41,6 +54,7 @@ namespace GameEngine {
 
     void Engine::Loop()
     {
+
         LastTime = glfwGetTime();
         while (isRunning && !glfwWindowShouldClose(Window::GetInstance()->GetWindow()))
         {

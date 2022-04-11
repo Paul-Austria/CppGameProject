@@ -25,9 +25,12 @@ target_link_libraries(GameEngine
 	PUBLIC
 	libglew_static
 	EnTT
+	lua_static
 	spdlog
 	glfw
 	glm
+	"${LUA_LIBARIES}"
+
 )
 
 

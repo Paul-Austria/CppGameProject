@@ -1,6 +1,12 @@
 set(SOURCES ${SOURCES}
-		Engine/Engine.hpp
 
+
+		Engine/sol/sol.hpp
+		Engine/sol/config.hpp
+		Engine/sol/forward.hpp
+		Engine/sol/assert.hpp
+
+		Engine/Engine.hpp
 
 		Engine/Core/Window.hpp
 		Engine/Scene/Scene.hpp
