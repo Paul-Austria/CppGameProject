@@ -85,7 +85,7 @@ namespace GameEngine {
 
 	void Scene::BackgroundUpdate(float deltaTime,bool isRunning)
 	{
-
+		ProfileInstance::GetInstance()->StartProfileSession("SceneBackground_"+this->sceneName);
 
 		CameraComponent activeCam = editorCam;
 		if (camera == GameCamera)
@@ -104,6 +104,7 @@ namespace GameEngine {
 			}
 		}
 
+		ProfileInstance::GetInstance()->StartProfileSession("NativeScripts");
 
 		auto nativeScripts = registry.view<NativeScriptHolder>();
 
@@ -111,6 +112,11 @@ namespace GameEngine {
 		{
 			registry.get<NativeScriptHolder>(ent).nativeScript->Update(deltaTime);
 		}
+
+		ProfileInstance::GetInstance()->EndProfileSession("NativeScripts");
+
+
+		ProfileInstance::GetInstance()->StartProfileSession("Renderer");
 
 		ProfileInstance::GetInstance()->StartProfileSession("Renderer");
 
@@ -133,6 +139,7 @@ namespace GameEngine {
 
 		ProfileInstance::GetInstance()->EndProfileSession("Renderer");
 
+		ProfileInstance::GetInstance()->EndProfileSession("SceneBackground_" + this->sceneName);
 
 	}
 

@@ -34,6 +34,7 @@ namespace GameEngine {
 		{
 			childProfiles[name] = ProcessTimeProfile(name);
 		}
+
 		childProfiles[name].Start();
 	}
 	float ProcessTimeProfile::EndChildProfile(const std::string& name)
@@ -62,7 +63,7 @@ namespace GameEngine {
 			{
 				it->second.PrintData();
 			}
-			spdlog::info("ENd ofChildren of {0}", name);
+			spdlog::info("End ofChildren of {0}", name);
 		}
 
 	}

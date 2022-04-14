@@ -7,9 +7,10 @@
 #include "Renderer/Renderer.hpp"
 #include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>
 #include <Engine/Entities/Entity.hpp>
+#include <Engine/Utils/Profiling/ProfileInstance.hpp>
 
 #define SOL_ALL_SAFETIES_ON 1
-#include <Engine/sol/sol.hpp>
+#include <sol/sol.hpp>
 #include <Engine/sol/assert.hpp>
 #include <iostream>
 
@@ -54,7 +55,7 @@ namespace GameEngine {
 
     void Engine::Loop()
     {
-
+        ProfileInstance::GetInstance()->StartProfileSession("Loop");
         LastTime = glfwGetTime();
         while (isRunning && !glfwWindowShouldClose(Window::GetInstance()->GetWindow()))
         {
@@ -66,7 +67,8 @@ namespace GameEngine {
 #endif // DEBUG
             glfwSwapBuffers(Window::GetInstance()->GetWindow());
             glfwPollEvents();
-
+            ProfileInstance::GetInstance()->EndProfileSession("Loop");
+        //    ProfileInstance::GetInstance()->PrintDataToTerminal();
         }
     }
     Engine* Engine::GetInstance()

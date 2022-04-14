@@ -1,5 +1,5 @@
 #include "ProfileInstance.hpp"
-
+#include <spdlog/spdlog.h>ß
 
 GameEngine::ProfileInstance* GameEngine::ProfileInstance::instance = 0;
 
@@ -37,10 +37,14 @@ namespace GameEngine {
 	}
 	void ProfileInstance::PrintDataToTerminal()
 	{
+
+		spdlog::info("===============ProfileOUTBEGIN=======================");
 		for (auto it = childProfiles.begin(); it != childProfiles.end(); it++)
 		{
 			it->second.PrintData();
 		}
+
+		spdlog::info("===============ProfileOUTEND=========================");
 	}
 	std::map<std::string, ProcessTimeProfile>& ProfileInstance::GetAllProfiles()
 	{

@@ -25,6 +25,6 @@
 [submodule "Thirdparty/sol2"]
 	path = Thirdparty/sol2
 	url = https://github.com/Paul-Austria/sol2.git
-[submodule "Thirdparty/--lua-cmake"]
-	path = Thirdparty/--lua-cmake
+[submodule "Thirdparty/lua"]
+	path = Thirdparty/lua
 	url = https://github.com/walterschell/Lua.git

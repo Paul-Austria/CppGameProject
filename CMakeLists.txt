@@ -22,6 +22,7 @@ add_subdirectory("RunTime")
 message(${PROJECT_BINARY_DIR})
 
 
+
 file(INSTALL "Resources" DESTINATION "${PROJECT_BINARY_DIR}/RunTime")
 file(CREATE_LINK  "${PROJECT_BINARY_DIR}/GameEngine/GameEngine.dll"  "${PROJECT_BINARY_DIR}/RunTime/GameEngine.dll" )
 file(CREATE_LINK  "${PROJECT_BINARY_DIR}/GameEngine/GameEngine.dll"  "${PROJECT_BINARY_DIR}/RunTime/GameEngine.dll" )

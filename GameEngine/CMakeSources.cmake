@@ -1,7 +1,6 @@
 set(SOURCES ${SOURCES}
 
 
-		Engine/sol/sol.hpp
 		Engine/sol/config.hpp
 		Engine/sol/forward.hpp
 		Engine/sol/assert.hpp
