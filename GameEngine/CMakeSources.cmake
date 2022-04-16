@@ -5,6 +5,7 @@ set(SOURCES ${SOURCES}
 		Engine/sol/forward.hpp
 		Engine/sol/assert.hpp
 
+		Engine/Entities/data/LuaScriptHandler.hpp
 		Engine/Engine.hpp
 
 		Engine/Core/Window.hpp
@@ -56,6 +57,9 @@ set(SOURCES ${SOURCES}
 )
 
 set(SOURCES ${SOURCES}
+
+		Engine/Entities/data/LuaScriptHandler.cpp
+
 		Engine/Engine.cpp
 
 		Engine/Entities/Entity.cpp

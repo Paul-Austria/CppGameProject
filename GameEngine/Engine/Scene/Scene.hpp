@@ -6,6 +6,8 @@
 #include <Engine/Entities/BaseComponents.hpp>
 #include <Engine/Editor/EditorView.hpp>
 
+#include <Engine/Entities/data/LuaScriptHandler.hpp>
+
 namespace GameEngine {
 
 	class Entity;
@@ -63,7 +65,8 @@ namespace GameEngine {
 		CameraComponent editorCam;
 		SceneStatus status = Stopped;
 		ActiveCamera camera = EditorCamera;
-
+		
+		LuaScriptHandler luaHandler;
 
 		entt::registry registry;
 

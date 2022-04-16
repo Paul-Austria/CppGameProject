@@ -17,6 +17,7 @@
 #include <Engine/Renderer/Renderable.hpp>
 #include <Engine/Core/Window.hpp>
 
+
 namespace GameEngine {
 	Scene::Scene(const std::string& sceneName)
 	{
@@ -28,6 +29,8 @@ namespace GameEngine {
 #endif // DEBUG
 
 
+		luaHandler = LuaScriptHandler();
+		auto script = luaHandler.GenerateScript("D:\\PR\\GameEngineTesting\\test.lua");
 
 		Entity entity = { registry.create(), this };
 		entity.AddComponent<TransformComponent>();
@@ -38,6 +41,11 @@ namespace GameEngine {
 		entity.AddComponent<CameraComponent>();
 		entity.AddComponent<Renderable>();
 		entity.AddComponent<NativeScriptHolder>(std::make_shared<NativeScript>(entity.GetEntity()));
+		entity.AddComponent<LuaScript>(script);
+
+		entity.GetComponent<LuaScript>().RunUpdate();
+		entity.GetComponent<LuaScript>().RunUpdate();
+
 		DestroyEntity(entity);
 
 
