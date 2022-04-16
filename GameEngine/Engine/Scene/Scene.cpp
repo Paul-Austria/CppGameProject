@@ -67,6 +67,16 @@ namespace GameEngine {
 		if (cStatus == Running && status == Stopped) {
 			camera = GameCamera;
 			CopyRegsitry(registry, saveRegistry);
+
+
+			auto scripts = registry.view<LuaScript>();
+
+			for (auto ent : scripts)
+			{
+				LuaScript& script = registry.get<LuaScript>(ent);
+				script.Reset();
+			}
+			
 		}
 		else if (status == Running && cStatus == Stopped)
 		{
@@ -112,16 +122,32 @@ namespace GameEngine {
 			}
 		}
 
-		ProfileInstance::GetInstance()->StartProfileSession("NativeScripts");
-
-		auto nativeScripts = registry.view<NativeScriptHolder>();
-
-		for (auto ent : nativeScripts)
+		if (Running)
 		{
-			registry.get<NativeScriptHolder>(ent).nativeScript->Update(deltaTime);
-		}
+			ProfileInstance::GetInstance()->StartProfileSession("NativeScripts");
 
-		ProfileInstance::GetInstance()->EndProfileSession("NativeScripts");
+			auto nativeScripts = registry.view<NativeScriptHolder>();
+
+			for (auto ent : nativeScripts)
+			{
+				registry.get<NativeScriptHolder>(ent).nativeScript->Update(deltaTime);
+			}
+
+			ProfileInstance::GetInstance()->EndProfileSession("NativeScripts");
+			ProfileInstance::GetInstance()->StartProfileSession("LuaScripts");
+
+
+			auto scripts = registry.view<LuaScript>();
+
+			for (auto ent : scripts)
+			{
+				LuaScript& script = registry.get<LuaScript>(ent);
+				script.RunUpdate();
+			}
+
+			ProfileInstance::GetInstance()->EndProfileSession("LuaScripts");
+		}
+		
 
 
 		ProfileInstance::GetInstance()->StartProfileSession("Renderer");
@@ -237,6 +263,11 @@ namespace GameEngine {
 			{
 				auto rendercom = source.get<CameraComponent>(en);
 				target.emplace<CameraComponent>(enti, rendercom);
+			}
+			if (source.all_of<LuaScript>(en))
+			{
+				auto rendercom = source.get<LuaScript>(en);
+				target.emplace<LuaScript>(enti, rendercom);
 			}
 		}
 		

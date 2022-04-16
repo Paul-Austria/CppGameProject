@@ -15,7 +15,7 @@ namespace GameEngine {
 			sol::error err = fx;
 			
 			spdlog::error("failed to load Script: : {0}",err.what());
-			lua.script("function run() end",env);
+			lua.script("function update() end function setup() end",env);
 		}
 		else
 		{

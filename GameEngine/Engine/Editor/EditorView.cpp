@@ -13,6 +13,10 @@
 #include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>c
 #include <Engine/Engine.hpp>
 
+#include <Engine/Entities/data/DataStructs.hpp>
+
+
+
 namespace GameEngine {
 	EditorView::EditorView(Scene* currentScene)
 	{
@@ -381,6 +385,17 @@ namespace GameEngine {
 				}
 
 
+				if (scene->registry.all_of<LuaScript>(currentEntity))
+				{
+					if (ImGui::CollapsingHeader("Lua Script"))
+					{
+						LuaScript& script = scene->registry.get<LuaScript>(currentEntity);
+						std::string path = script.scriptPath + "                                                              ";
+						ImGui::InputText("ScriptPath", path.data(), path.size());
+						script.scriptPath = path;
+					}
+				}
+
 				if (scene->registry.all_of<Renderable>(currentEntity))
 				{
 					if (ImGui::CollapsingHeader("Renderable"))
@@ -473,6 +488,14 @@ namespace GameEngine {
 						if (ImGui::MenuItem("Add Camera"))
 						{
 							scene->registry.emplace<CameraComponent>(currentEntity);
+						}
+					}
+					if (!scene->registry.all_of<LuaScript>(currentEntity))
+					{
+						if (ImGui::MenuItem("Add Lua Script"))
+						{
+							LuaScript emptyScript = scene->luaHandler.GenerateScript("");
+							scene->registry.emplace<LuaScript>(currentEntity, emptyScript);
 						}
 					}
 
