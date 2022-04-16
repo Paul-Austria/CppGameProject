@@ -102,7 +102,14 @@ namespace GameEngine {
 				camera["zoom"] = cam.zoom;
 				subObject["camera"] = camera;
 			}
+			if (scene->registry.all_of<LuaScript>(ent))
+			{
+				LuaScript& script = scene->registry.get<LuaScript>(ent);
+				json lScript;
 
+				lScript["path"] = script.scriptPath;
+				subObject["luaScript"] = lScript;
+			}
 			if (scene->registry.all_of<Renderable>(ent))
 			{
 				json renderable;
@@ -230,8 +237,14 @@ namespace GameEngine {
 				}
 				
 			}
-		}
 
+			if (enti.contains("luaScript"))
+			{
+				json lscript = enti["luaScript"];
+				LuaScript& luaScript = ent.AddComponent<LuaScript>(scene->luaHandler.GenerateScript(lscript["path"]));
+			}
+		}
+		scene->status = Stopped;
 		return scene;
 	}
 #pragma endregion

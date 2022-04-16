@@ -30,7 +30,6 @@ namespace GameEngine {
 
 
 		luaHandler = LuaScriptHandler();
-		auto script = luaHandler.GenerateScript("D:\\PR\\GameEngineTesting\\test.lua");
 
 		Entity entity = { registry.create(), this };
 		entity.AddComponent<TransformComponent>();
@@ -41,10 +40,10 @@ namespace GameEngine {
 		entity.AddComponent<CameraComponent>();
 		entity.AddComponent<Renderable>();
 		entity.AddComponent<NativeScriptHolder>(std::make_shared<NativeScript>(entity.GetEntity()));
-		entity.AddComponent<LuaScript>(script);
 
-		entity.GetComponent<LuaScript>().RunUpdate();
-		entity.GetComponent<LuaScript>().RunUpdate();
+
+		auto script = luaHandler.GenerateScript("");
+		entity.AddComponent<LuaScript>(script);
 
 		DestroyEntity(entity);
 
@@ -122,7 +121,7 @@ namespace GameEngine {
 			}
 		}
 
-		if (Running)
+		if (this->status == Running)
 		{
 			ProfileInstance::GetInstance()->StartProfileSession("NativeScripts");
 

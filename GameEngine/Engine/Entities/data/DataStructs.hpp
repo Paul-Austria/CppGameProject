@@ -27,7 +27,7 @@ namespace GameEngine
 
 
         void Reset() {
-            LuaScript s = this->parentHandler->GenerateScript(this->scriptPath);
+            LuaScript s = parentHandler->GenerateScript(scriptPath);
             this->environment = s.environment;
             alreadyRun = false;
         }
