@@ -13,8 +13,8 @@
 //#include <sol/sol.hpp>
 //#include <Engine/sol/assert.hpp>
 #include <iostream>
-
-GameEngine::Engine* GameEngine::Engine::instance = 0;
+#include <memory>
+std::unique_ptr<GameEngine::Engine> GameEngine::Engine::instance = 0;
 
 namespace GameEngine {
     Engine::Engine()
@@ -22,7 +22,7 @@ namespace GameEngine {
     }
     Engine::~Engine()
     {
-        delete instance;
+    //    delete instance;
     }
     void Engine::Init(int widht, int height,const std::string& title , const std::string& ProjectPath, bool isFullScreen)
     {
@@ -39,26 +39,6 @@ namespace GameEngine {
         {
             LoadProject(ProjectPath);
         }
-
-/*
-        sol::state lua;
-        // open some common libraries
-        lua.open_libraries(sol::lib::base, sol::lib::package);
-        sol::environment env(lua, sol::create,lua.globals());
-        auto res1 = lua.script_file("D:\\PR\\GameEngineTesting\\test.lua",env);
-        sol::environment env2(lua, sol::create, lua.globals());
-        lua.script_file("D:\\PR\\GameEngineTesting\\test.lua", env2);
-
-       lua.script("run()",env2);
-       lua.script("run()", env);
-       lua.script("run()", env);
-       lua.script("run()", env);
- 
-       int var = env["b"];
-       spdlog::info(var);
-    
-       lua.script("run()", env2);
-       */
     }
 
     void Engine::SetCurrentScene(std::shared_ptr<Scene> scene)
@@ -85,14 +65,15 @@ namespace GameEngine {
         //    ProfileInstance::GetInstance()->PrintDataToTerminal();
         }
     }
-    Engine* Engine::GetInstance()
+    GameEngine::Engine* Engine::GetInstance()
     {
         if (!instance)
         {
-            instance = new Engine();
+            instance = std::make_unique<Engine>();
             spdlog::info("New Engine created, Testing Version: {0}", GameProject_VERSION);
         }
-        return instance;
+        Engine* ptr =  instance.get();
+        return ptr;
     }
 
     void Engine::Reset()
@@ -115,7 +96,6 @@ namespace GameEngine {
             currentScene->EditorUpdate(deltaTime);
         }
     }
-
     void Engine::SceneUpdate(float deltaTime)
     {
         if (currentScene != nullptr)

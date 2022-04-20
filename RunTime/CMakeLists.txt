@@ -10,7 +10,7 @@ file(GLOB_RECURSE DEMO_SOURCE_FILES
 		"*.c" "*.cpp" "*.rc"
 		)
 
-add_executable (RunTime "GameProject.cpp" "GameProject.h"  "ExampleScene.hpp" "ExampleScene.cpp")
+add_executable (RunTime "GameProject.cpp" "GameProject.h"   )
 
 target_compile_features(RunTime PUBLIC cxx_std_20)
 target_include_directories(RunTime PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)

@@ -29,7 +29,6 @@ namespace GameEngine {
 		Scene(const std::string& Path,bool usePath);
 
 
-
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
@@ -46,6 +45,8 @@ namespace GameEngine {
 
 		void ChangeActiveCamera(ActiveCamera cam);
 
+
+		std::string GetSceneName() { return sceneName; }
 
 	private:
 		friend class Engine;

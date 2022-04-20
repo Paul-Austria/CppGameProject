@@ -17,6 +17,8 @@ namespace GameEngine {
 		
 		sol::state lua;
 	private:
+		void CreateGlMUserTypes();
+
 	};
 
 	

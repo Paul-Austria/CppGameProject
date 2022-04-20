@@ -48,6 +48,9 @@ namespace GameEngine {
 		DestroyEntity(entity);
 
 
+
+
+
 		editorView = EditorView(this);
 	}
 	Scene::~Scene()

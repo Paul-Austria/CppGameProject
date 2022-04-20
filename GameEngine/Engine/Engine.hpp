@@ -17,8 +17,9 @@ namespace GameEngine {
 		void Loop();
 		
 		void SetCurrentScene(std::shared_ptr<Scene> Scene);
-		
-		static Engine* GetInstance();
+		std::shared_ptr<Scene> GetCurrentScene() { return currentScene; }
+ 		
+		static GameEngine::Engine* GetInstance();
 
 		void Reset();
 
@@ -35,7 +36,7 @@ namespace GameEngine {
 		void DevelopUpdate(float deltaTime);
 		void SceneUpdate(float deltaTime);
 
-		static Engine* instance;
+		static std::unique_ptr<GameEngine::Engine>  instance;
 		
 
 		ProjectData currentProject;
