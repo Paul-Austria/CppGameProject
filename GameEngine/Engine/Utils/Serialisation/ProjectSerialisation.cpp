@@ -10,6 +10,7 @@
 
 #include <Engine/Scene/Scene.hpp>
 #include <Engine/Entities/Entity.hpp>
+#include <Engine/Entities/data/LuaScript.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -241,7 +242,7 @@ namespace GameEngine {
 			if (enti.contains("luaScript"))
 			{
 				json lscript = enti["luaScript"];
-				LuaScript& luaScript = ent.AddComponent<LuaScript>(scene->luaHandler.GenerateScript(lscript["path"]));
+				LuaScript& luaScript = ent.AddComponent<LuaScript>(scene->luaHandler.GenerateScript(lscript["path"], ent));
 			}
 		}
 		scene->status = Stopped;

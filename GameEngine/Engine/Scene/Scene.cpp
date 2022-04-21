@@ -8,7 +8,7 @@
 
 
 #include <Engine/Entities/BaseComponents.hpp>
-
+#include <Engine/Entities/data/LuaScript.hpp>
 #include <Engine/Utils/Profiling/ProfileInstance.hpp>
 
 
@@ -17,6 +17,8 @@
 #include <Engine/Renderer/Renderable.hpp>
 #include <Engine/Core/Window.hpp>
 
+
+#include <Engine/Entities/data/LuaScriptHandler.hpp>
 
 namespace GameEngine {
 	Scene::Scene(const std::string& sceneName)
@@ -42,7 +44,7 @@ namespace GameEngine {
 		entity.AddComponent<NativeScriptHolder>(std::make_shared<NativeScript>(entity.GetEntity()));
 
 
-		auto script = luaHandler.GenerateScript("");
+		auto script = luaHandler.GenerateScript("", entity);
 		entity.AddComponent<LuaScript>(script);
 
 		DestroyEntity(entity);
@@ -76,7 +78,7 @@ namespace GameEngine {
 			for (auto ent : scripts)
 			{
 				LuaScript& script = registry.get<LuaScript>(ent);
-				script.Reset();
+				script.Reset(Entity(ent, this));
 			}
 			
 		}

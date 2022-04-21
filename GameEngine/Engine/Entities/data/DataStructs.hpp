@@ -7,43 +7,10 @@
 #include <Engine/Renderer/Renderable.hpp>
 #include <memory>
 #include "NativeScript.hpp"
-#include "LuaScriptHandler.hpp"
 #include <spdlog/spdlog.h>
 
 namespace GameEngine
 {
-
-    struct LuaScript {
-        std::string scriptPath;
-        sol::environment environment;
-        LuaScriptHandler* parentHandler;
-        bool alreadyRun = false;
-
-        LuaScript(std::string path, sol::environment env, LuaScriptHandler* handler) {
-            this->scriptPath = path;
-            this->environment = env;
-            this->parentHandler = handler;
-        }
-
-
-        void Reset() {
-            LuaScript s = parentHandler->GenerateScript(scriptPath);
-            this->environment = s.environment;
-            alreadyRun = false;
-        }
-
-        void RunUpdate() {
-            if (!alreadyRun)
-            {
-                alreadyRun = true;
-                this->parentHandler->lua.script("setup()", this->environment);
-
-            }
-            this->parentHandler->lua.script("update()",this->environment);
-        }
-    };
-
-
     enum TextureLoadType {
         nearest = GL_NEAREST,
         linear = GL_LINEAR,

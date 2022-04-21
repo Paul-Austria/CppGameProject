@@ -14,7 +14,7 @@
 #include <Engine/Engine.hpp>
 
 #include <Engine/Entities/data/DataStructs.hpp>
-
+#include <Engine/Entities/data/LuaScript.hpp>
 
 
 namespace GameEngine {
@@ -179,60 +179,6 @@ namespace GameEngine {
 			static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
 			
 			if(Engine::GetInstance()->projectLoaded)browser.Render(this);
-/*
-
-			if (ImGui::CollapsingHeader("Textures"))
-			{
-				int columnSize = (int)ImGui::GetWindowWidth() / 130;
-
-
-				ImGui::Columns(columnSize, "Textures", false);
-
-				for (auto texture : TextureResourceManager::GetInstance()->textures)
-				{
-
-					if (ImGui::ImageButton((void*)texture.second.ID, ImVec2(130, 130)))
-					{
-
-					}
-					auto windowWidth = ImGui::GetWindowWidth() / columnSize;
-					auto textWidth = ImGui::CalcTextSize(texture.first.c_str()).x;
-					ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f + ImGui::GetCursorPosX());
-					ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 15);
-					ImGui::Text(texture.first.c_str());
-					ImGui::NextColumn();
-				}
-			}
-
-
-
-
-			if (ImGui::CollapsingHeader("SubTextures"))
-			{
-				int columnSize = (int)ImGui::GetWindowWidth() / 130;
-
-
-
-				ImGui::Columns(columnSize, "SubTextures", false);
-
-				for (auto texture : TextureResourceManager::GetInstance()->subTextures)
-				{
-
-					if (ImGui::ImageButton((void*)texture.second.texture->ID, ImVec2(130, 130))) {
-
-					}
-
-
-					auto windowWidth = ImGui::GetWindowWidth() / columnSize;
-					auto textWidth = ImGui::CalcTextSize(texture.first.c_str()).x;
-					ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f + ImGui::GetCursorPosX());
-					ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 15);
-					ImGui::Text(texture.first.c_str());
-					ImGui::NextColumn();
-				}
-			}
-
-*/
 
 			ImGui::End();
 
@@ -255,6 +201,7 @@ namespace GameEngine {
 			{
 				if (ImGui::Button("STOP", ImVec2(ImGui::GetWindowSize().x / 2 - 7, 20)))
 				{
+					entitySelected = false;
 					scene->ChangeStatus(Stopped);
 				}
 				ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + ImGui::GetWindowSize().x / 2 + 2, ImGui::GetCursorPosY() - 24));
@@ -494,7 +441,7 @@ namespace GameEngine {
 					{
 						if (ImGui::MenuItem("Add Lua Script"))
 						{
-							LuaScript emptyScript = scene->luaHandler.GenerateScript("");
+							LuaScript emptyScript = scene->luaHandler.GenerateScript("", Entity(currentEntity, scene));
 							scene->registry.emplace<LuaScript>(currentEntity, emptyScript);
 						}
 					}

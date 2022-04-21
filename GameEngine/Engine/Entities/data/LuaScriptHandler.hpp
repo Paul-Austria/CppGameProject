@@ -7,13 +7,13 @@
 namespace GameEngine {
 
 	struct LuaScript;
-	
+	class Entity;
 	class LuaScriptHandler
 	{
 	public:
 		LuaScriptHandler();
 
-		LuaScript GenerateScript(const std::string& script);
+		LuaScript GenerateScript(const std::string& script, Entity entity);
 		
 		sol::state lua;
 	private:

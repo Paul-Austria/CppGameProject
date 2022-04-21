@@ -3,8 +3,13 @@
 #include <spdlog/spdlog.h>
 #include <Engine/Engine.hpp>
 #include <Engine/Scene/ProjectData.hpp>
+#include <Engine/Entities/data/LuaScript.hpp>
 #include <glm/glm.hpp>
 #include <Engine/Scene/Scene.hpp>
+#include <Engine/Entities/Entity.hpp>
+#include <Engine/Entities/BaseComponents.hpp>
+
+#include <Engine/Entities/Entity.hpp>
 
 namespace GameEngine {
 	LuaScriptHandler::LuaScriptHandler()
@@ -17,20 +22,35 @@ namespace GameEngine {
 		CreateGlMUserTypes();
 
 		auto eng = lua["Engine"].get_or_create<sol::table>();
+		auto entit = lua["Engine"]["Entities"].get_or_create<sol::table>();
+
+		entit.new_usertype<TagComponent>("TagComponent",
+			"Tag", &TagComponent::Tag
+			);
+		entit.new_usertype<TransformComponent>("TransformComponent",
+			"position",&TransformComponent::position,
+			"rotation",&TransformComponent::rotation,
+			"scale",&TransformComponent::scale
+			);
+		entit.new_usertype<Entity>("Entity",
+			"GetTagComponent", &Entity::GetComponent<TagComponent>,
+			"GetTransformComponent", &Entity::GetComponent<TransformComponent>
+			);
 		eng.new_usertype<Scene>("Scene",
-			"GetSceneName",&Scene::GetSceneName
-			
+			"GetSceneName",&Scene::GetSceneName,
+			"CreateEntity",&Scene::CreateEntity,
+			"DestroyEntity",&Scene::DestroyEntity
 			);
 		eng.new_usertype<Engine>("Engine",
 			"GetInstance", &Engine::GetInstance,
 			"GetCurrentScene", &Engine::GetCurrentScene
 			);
 	}
-	LuaScript LuaScriptHandler::GenerateScript(const std::string& script)
+	LuaScript LuaScriptHandler::GenerateScript(const std::string& script, Entity entity)
 	{
 		
 		sol::environment env = sol::environment(lua, sol::create, lua.globals());
-
+		
 		std::string fullPath = Engine::GetInstance()->GetCurrentProject().GetPath() + "/" + script;
 		auto fx = this->lua.load_file(fullPath);
 		if (!fx.valid()) {
@@ -43,7 +63,7 @@ namespace GameEngine {
 		{
 			lua.script_file(fullPath, env);
 		}
-		LuaScript lscript = LuaScript(script, env, this);
+		LuaScript lscript = LuaScript(script, env, this, entity);
 		return lscript;
 	}
 

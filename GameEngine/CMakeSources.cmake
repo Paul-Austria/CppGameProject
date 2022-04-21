@@ -6,6 +6,7 @@ set(SOURCES ${SOURCES}
 		Engine/sol/assert.hpp
 
 		Engine/Entities/data/LuaScriptHandler.hpp
+		Engine/Entities/data/LuaScript.hpp
 		Engine/Engine.hpp
 
 		Engine/Core/Window.hpp

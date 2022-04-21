@@ -7,9 +7,7 @@
 #include <Engine/Editor/EditorView.hpp>
 
 #include <Engine/Entities/data/LuaScriptHandler.hpp>
-
 namespace GameEngine {
-
 	class Entity;
 	enum  SceneStatus {
 		Stopped,
