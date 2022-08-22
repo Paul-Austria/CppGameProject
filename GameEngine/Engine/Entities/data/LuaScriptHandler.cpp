@@ -42,7 +42,7 @@ namespace GameEngine {
 			);
 
 		entit.new_usertype<LuaScript>("LuaScript",
-			"GetString", &LuaScript::GetString
+			"Get",&LuaScript::GetVar<sol::environment>
 			);
 		
 		eng.new_usertype<Scene>("Scene",

@@ -26,7 +26,7 @@ namespace GameEngine {
         };
 
 
-        std::string GetString(const std::string& name)
+        template<typename T> T GetVar(const std::string& name)
         {
             return environment[name];
         }
