@@ -8,7 +8,7 @@
 
 
 #include <Engine/Entities/BaseComponents.hpp>
-
+#include <Engine/Entities/data/LuaScript.hpp>
 #include <Engine/Utils/Profiling/ProfileInstance.hpp>
 
 
@@ -16,6 +16,11 @@
 #include <Engine/ResourceManagement/TextureResourceManager.hpp>
 #include <Engine/Renderer/Renderable.hpp>
 #include <Engine/Core/Window.hpp>
+
+
+#include <Engine/Entities/data/LuaScriptHandler.hpp>
+#include <algorithm>
+
 
 namespace GameEngine {
 	Scene::Scene(const std::string& sceneName)
@@ -28,17 +33,23 @@ namespace GameEngine {
 #endif // DEBUG
 
 
+		luaHandler = LuaScriptHandler();
 
 		Entity entity = { registry.create(), this };
 		entity.AddComponent<TransformComponent>();
 		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = "Test";
 
-
 		entity.AddComponent<CameraComponent>();
 		entity.AddComponent<Renderable>();
 		entity.AddComponent<NativeScriptHolder>(std::make_shared<NativeScript>(entity.GetEntity()));
+		auto script = luaHandler.GenerateScript("", entity);
+		entity.AddComponent<LuaScript>(script);
+
 		DestroyEntity(entity);
+
+
+
 
 
 		editorView = EditorView(this);
@@ -59,6 +70,16 @@ namespace GameEngine {
 		if (cStatus == Running && status == Stopped) {
 			camera = GameCamera;
 			CopyRegsitry(registry, saveRegistry);
+
+
+			auto scripts = registry.view<LuaScript>();
+
+			for (auto ent : scripts)
+			{
+				LuaScript& script = registry.get<LuaScript>(ent);
+				script.Reset(Entity(ent, this));
+			}
+			
 		}
 		else if (status == Running && cStatus == Stopped)
 		{
@@ -78,6 +99,21 @@ namespace GameEngine {
 		camera = cam;
 	}
 
+	Entity Scene::GetEntityByTag(std::string name)
+	{
+		auto tags = registry.view<TagComponent>();
+		for (auto ent : tags)
+		{
+			auto tag = registry.get<TagComponent>(ent).Tag;
+			tag.erase(std::remove(tag.begin(), tag.end(), '\0'),tag.end());
+			if (tag == name)
+			{
+				return Entity{ent, this};
+			}
+		}
+		return Entity();
+	}
+
 
 
 
@@ -85,7 +121,7 @@ namespace GameEngine {
 
 	void Scene::BackgroundUpdate(float deltaTime,bool isRunning)
 	{
-
+		ProfileInstance::GetInstance()->StartProfileSession("SceneBackground_"+this->sceneName);
 
 		CameraComponent activeCam = editorCam;
 		if (camera == GameCamera)
@@ -104,13 +140,35 @@ namespace GameEngine {
 			}
 		}
 
-
-		auto nativeScripts = registry.view<NativeScriptHolder>();
-
-		for (auto ent : nativeScripts)
+		if (this->status == Running)
 		{
-			registry.get<NativeScriptHolder>(ent).nativeScript->Update(deltaTime);
+			ProfileInstance::GetInstance()->StartProfileSession("NativeScripts");
+
+			auto nativeScripts = registry.view<NativeScriptHolder>();
+
+			for (auto ent : nativeScripts)
+			{
+				registry.get<NativeScriptHolder>(ent).nativeScript->Update(deltaTime);
+			}
+
+			ProfileInstance::GetInstance()->EndProfileSession("NativeScripts");
+			ProfileInstance::GetInstance()->StartProfileSession("LuaScripts");
+
+
+			auto scripts = registry.view<LuaScript>();
+
+			for (auto ent : scripts)
+			{
+				LuaScript& script = registry.get<LuaScript>(ent);
+				script.RunUpdate();
+			}
+
+			ProfileInstance::GetInstance()->EndProfileSession("LuaScripts");
 		}
+		
+
+
+		ProfileInstance::GetInstance()->StartProfileSession("Renderer");
 
 		ProfileInstance::GetInstance()->StartProfileSession("Renderer");
 
@@ -133,6 +191,7 @@ namespace GameEngine {
 
 		ProfileInstance::GetInstance()->EndProfileSession("Renderer");
 
+		ProfileInstance::GetInstance()->EndProfileSession("SceneBackground_" + this->sceneName);
 
 	}
 
@@ -140,7 +199,7 @@ namespace GameEngine {
 		
 		editorView.EditorUpdate(deltaTime);
 
-	//	ProfileInstance::GetInstance()->PrintDataToTerminal();
+		
 	}
 
 
@@ -222,6 +281,11 @@ namespace GameEngine {
 			{
 				auto rendercom = source.get<CameraComponent>(en);
 				target.emplace<CameraComponent>(enti, rendercom);
+			}
+			if (source.all_of<LuaScript>(en))
+			{
+				auto rendercom = source.get<LuaScript>(en);
+				target.emplace<LuaScript>(enti, rendercom);
 			}
 		}
 		

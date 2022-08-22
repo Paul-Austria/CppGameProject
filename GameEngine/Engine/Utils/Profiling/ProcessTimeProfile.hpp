@@ -21,6 +21,7 @@ namespace GameEngine {
 		void ClearChildren();
 
 		void PrintData();
+		void PrintImGUIData();
 
 		ProcessTimeProfile& GetChildProfile(const std::string& name);
 		

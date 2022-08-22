@@ -15,6 +15,7 @@ namespace GameEngine {
 		ProcessTimeProfile& GetProfile(const std::string& name);
 
 		void PrintDataToTerminal();
+		void PrintImGUI();
 
 		std::map<std::string, ProcessTimeProfile>& GetAllProfiles();
 

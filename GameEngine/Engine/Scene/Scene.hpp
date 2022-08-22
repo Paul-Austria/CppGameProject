@@ -6,8 +6,8 @@
 #include <Engine/Entities/BaseComponents.hpp>
 #include <Engine/Editor/EditorView.hpp>
 
+#include <Engine/Entities/data/LuaScriptHandler.hpp>
 namespace GameEngine {
-
 	class Entity;
 	enum  SceneStatus {
 		Stopped,
@@ -27,7 +27,6 @@ namespace GameEngine {
 		Scene(const std::string& Path,bool usePath);
 
 
-
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
@@ -43,7 +42,10 @@ namespace GameEngine {
 		void ChangeStatus(SceneStatus status);
 
 		void ChangeActiveCamera(ActiveCamera cam);
+		Entity GetEntityByTag(std::string name);
 
+
+		std::string GetSceneName() { return sceneName; }
 
 	private:
 		friend class Engine;
@@ -63,7 +65,8 @@ namespace GameEngine {
 		CameraComponent editorCam;
 		SceneStatus status = Stopped;
 		ActiveCamera camera = EditorCamera;
-
+		
+		LuaScriptHandler luaHandler;
 
 		entt::registry registry;
 

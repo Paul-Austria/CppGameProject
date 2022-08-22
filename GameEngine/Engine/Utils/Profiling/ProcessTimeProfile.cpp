@@ -1,6 +1,12 @@
 #include "ProcessTimeProfile.hpp"
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
+
+
+#include <Engine/Renderer/ImGUI/imgui/imgui.h>
+#include <Engine/Utils/StringHelpers.hpp>
+#include <sstream>
+
 namespace GameEngine {
 	ProcessTimeProfile::ProcessTimeProfile(const std::string& name)
 	{
@@ -34,6 +40,7 @@ namespace GameEngine {
 		{
 			childProfiles[name] = ProcessTimeProfile(name);
 		}
+
 		childProfiles[name].Start();
 	}
 	float ProcessTimeProfile::EndChildProfile(const std::string& name)
@@ -62,9 +69,23 @@ namespace GameEngine {
 			{
 				it->second.PrintData();
 			}
-			spdlog::info("ENd ofChildren of {0}", name);
+			spdlog::info("End ofChildren of {0}", name);
 		}
 
+	}
+	void ProcessTimeProfile::PrintImGUIData()
+	{
+		std::stringstream ss;
+		ss << name << " took " << GetProcessTime();
+		if (ImGui::CollapsingHeader(ss.str().c_str())) {
+			if (childProfiles.size() > 0)
+			{
+				for (auto it = childProfiles.begin(); it != childProfiles.end(); it++)
+				{
+					it->second.PrintImGUIData();
+				}
+			}
+		}
 	}
 	ProcessTimeProfile& ProcessTimeProfile::GetChildProfile(const std::string& name)
 	{

@@ -7,11 +7,10 @@
 #include <Engine/Renderer/Renderable.hpp>
 #include <memory>
 #include "NativeScript.hpp"
+#include <spdlog/spdlog.h>
 
 namespace GameEngine
 {
-
-
     enum TextureLoadType {
         nearest = GL_NEAREST,
         linear = GL_LINEAR,
