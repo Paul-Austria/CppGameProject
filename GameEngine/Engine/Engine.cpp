@@ -78,7 +78,9 @@ namespace GameEngine {
 
     void Engine::Reset()
     {
-        //TODO
+        currentProject = ProjectData();
+        currentProject.CreateNewScene("FirstScene");
+        currentProject.SetCurrentScene("FirstScene");
     }
 
     void Engine::LoadProject(const std::string& path)

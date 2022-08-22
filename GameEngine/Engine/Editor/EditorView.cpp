@@ -2,6 +2,7 @@
 #include <Engine/Scene/Scene.hpp>
 
 #include "Engine/Renderer/ImGUI/imgui/imgui.h"
+#include "Engine/Renderer/ImGUI/imgui/ImGuiFileDialog.h"
 #include "Engine/Renderer/ImGUI/imgui/imgui_internal.h"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/ImGUI/ImGUIStyling.hpp"
@@ -29,6 +30,8 @@ namespace GameEngine {
 
 	void EditorView::CreateProject()
 	{
+		Engine::GetInstance()->Reset();
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose Project Folder", nullptr, ".");
 	}
 
 	void EditorView::SaveProject()
@@ -64,6 +67,23 @@ namespace GameEngine {
 					newSceneLoaded = true;
 
 				}
+
+				// display
+				if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
+				{
+					// action if OK
+					if (ImGuiFileDialog::Instance()->IsOk())
+					{
+						std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+						std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+						Engine::GetInstance()->currentProject = ProjectData(filePath);
+						Engine::GetInstance()->projectLoaded = true;
+					}
+
+					// close
+					ImGuiFileDialog::Instance()->Close();
+				}
+
 				if (ImGui::MenuItem("Save Poject"))
 				{
 					SaveProject();

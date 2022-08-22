@@ -36,6 +36,10 @@ set(SOURCES ${SOURCES}
 		Engine/Renderer/ImGUI/imgui/imstb_rectpack.h
 		Engine/Renderer/ImGUI/imgui/imstb_textedit.h
 		Engine/Renderer/ImGUI/imgui/imstb_truetype.h
+		
+		Engine/Renderer/ImGUI/imgui/dirent/dirent.h
+		Engine/Renderer/ImGUI/imgui/ImGuiFileDialog.h
+		Engine/Renderer/ImGUI/imgui/ImGuiFileDialogConfig.h
 
 		Engine/Renderer/ImGUI/ImGUIStyling.hpp
 
@@ -89,6 +93,7 @@ set(SOURCES ${SOURCES}
 		Engine/Renderer/ImGUI/imgui/imgui_widgets.cpp
 		Engine/Renderer/ImGUI/imgui/backends/imgui_impl_glfw.cpp
 		Engine/Renderer/ImGUI/imgui/backends/imgui_impl_opengl3.cpp
+		Engine/Renderer/ImGUI/imgui/ImGuiFileDialog.cpp
 
 		Engine/Renderer/Shaders/ShaderProgram.cpp
 		Engine/Renderer/Renderable.cpp

@@ -40,7 +40,7 @@ namespace GameEngine {
 		friend class Engine;
 		friend class ProjectSerialisation;
 
-		std::string Path = "D:/PR/GameEngineTesting/TestProject";
+		std::string Path = "";
 		std::string Name = "New_Project";
 		//Name, Path
 		std::map<std::string, std::string> ResourceIncludes;

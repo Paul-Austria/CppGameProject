@@ -5,6 +5,7 @@
 namespace GameEngine {
 	ProjectData::ProjectData(const std::string& path)
 	{
+		this->SetPath(path);
 	}
 
 	ProjectData::ProjectData()
