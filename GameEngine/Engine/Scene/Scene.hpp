@@ -42,6 +42,7 @@ namespace GameEngine {
 		void ChangeStatus(SceneStatus status);
 
 		void ChangeActiveCamera(ActiveCamera cam);
+		Entity GetEntityByTag(std::string name);
 
 
 		std::string GetSceneName() { return sceneName; }

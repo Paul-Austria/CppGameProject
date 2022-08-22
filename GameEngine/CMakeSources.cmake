@@ -1,5 +1,6 @@
 set(SOURCES ${SOURCES}
 
+		Engine/Utils/IO/Input.hpp
 
 		Engine/sol/config.hpp
 		Engine/sol/forward.hpp
@@ -58,7 +59,7 @@ set(SOURCES ${SOURCES}
 )
 
 set(SOURCES ${SOURCES}
-
+		Engine/Utils/IO/Input.cpp	
 		Engine/Entities/data/LuaScriptHandler.cpp
 
 		Engine/Engine.cpp

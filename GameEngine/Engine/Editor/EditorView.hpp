@@ -25,6 +25,7 @@ namespace GameEngine {
 		Scene* scene;
 		bool projectLoaded = false;
 		bool newSceneLoaded = false;
+		bool showPerformanceWindow = false;
 		ContentBrowser browser;
 
 		entt::entity currentEntity;

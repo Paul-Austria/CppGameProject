@@ -26,6 +26,8 @@ namespace GameEngine
 
         static Window* GetInstance();
 
+        GLFWwindow* GetHandle() { return windowHandle; }
+
     private:
         static Window* instance;
         int width = 0, height = 0;

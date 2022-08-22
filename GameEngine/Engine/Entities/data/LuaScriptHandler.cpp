@@ -27,20 +27,31 @@ namespace GameEngine {
 		entit.new_usertype<TagComponent>("TagComponent",
 			"Tag", &TagComponent::Tag
 			);
+		
 		entit.new_usertype<TransformComponent>("TransformComponent",
 			"position",&TransformComponent::position,
 			"rotation",&TransformComponent::rotation,
 			"scale",&TransformComponent::scale
 			);
+		
 		entit.new_usertype<Entity>("Entity",
 			"GetTagComponent", &Entity::GetComponent<TagComponent>,
-			"GetTransformComponent", &Entity::GetComponent<TransformComponent>
+			"GetTransformComponent", &Entity::GetComponent<TransformComponent>,
+			"GetLuaScript",&Entity::GetComponent<LuaScript>,
+			"GetScene",&Entity::GetScene
 			);
+
+		entit.new_usertype<LuaScript>("LuaScript",
+			"GetString", &LuaScript::GetString
+			);
+		
 		eng.new_usertype<Scene>("Scene",
 			"GetSceneName",&Scene::GetSceneName,
 			"CreateEntity",&Scene::CreateEntity,
-			"DestroyEntity",&Scene::DestroyEntity
+			"DestroyEntity",&Scene::DestroyEntity,
+			"GetEntityByTag",&Scene::GetEntityByTag
 			);
+		
 		eng.new_usertype<Engine>("Engine",
 			"GetInstance", &Engine::GetInstance,
 			"GetCurrentScene", &Engine::GetCurrentScene

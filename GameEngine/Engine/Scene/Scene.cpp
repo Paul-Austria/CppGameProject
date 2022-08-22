@@ -19,6 +19,8 @@
 
 
 #include <Engine/Entities/data/LuaScriptHandler.hpp>
+#include <algorithm>
+
 
 namespace GameEngine {
 	Scene::Scene(const std::string& sceneName)
@@ -38,12 +40,9 @@ namespace GameEngine {
 		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = "Test";
 
-
 		entity.AddComponent<CameraComponent>();
 		entity.AddComponent<Renderable>();
 		entity.AddComponent<NativeScriptHolder>(std::make_shared<NativeScript>(entity.GetEntity()));
-
-
 		auto script = luaHandler.GenerateScript("", entity);
 		entity.AddComponent<LuaScript>(script);
 
@@ -98,6 +97,21 @@ namespace GameEngine {
 	void Scene::ChangeActiveCamera(ActiveCamera cam)
 	{
 		camera = cam;
+	}
+
+	Entity Scene::GetEntityByTag(std::string name)
+	{
+		auto tags = registry.view<TagComponent>();
+		for (auto ent : tags)
+		{
+			auto tag = registry.get<TagComponent>(ent).Tag;
+			tag.erase(std::remove(tag.begin(), tag.end(), '\0'),tag.end());
+			if (tag == name)
+			{
+				return Entity{ent, this};
+			}
+		}
+		return Entity();
 	}
 
 
@@ -185,7 +199,7 @@ namespace GameEngine {
 		
 		editorView.EditorUpdate(deltaTime);
 
-	//	ProfileInstance::GetInstance()->PrintDataToTerminal();
+		
 	}
 
 

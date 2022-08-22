@@ -17,6 +17,9 @@
 #include <Engine/Entities/data/LuaScript.hpp>
 
 
+#include <iostream>
+#include <Windows.h>
+
 namespace GameEngine {
 	EditorView::EditorView(Scene* currentScene)
 	{
@@ -68,6 +71,13 @@ namespace GameEngine {
 				if (ImGui::MenuItem("New Scene"))
 				{
 				}
+				if (Engine::GetInstance()->projectLoaded)
+				{
+					if (ImGui::MenuItem("Open Editor"))
+					{
+						ShellExecute(NULL, "open", "code", Engine::GetInstance()->currentProject.GetPath().c_str(), NULL, 0);
+					}
+				}
 
 				ImGui::EndMenu();
 			}
@@ -83,16 +93,22 @@ namespace GameEngine {
 					{
 						ImGUIStyling::BasicStyle();
 					}
+		
 					ImGui::EndMenu();
 				}
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Build"))
 			{
+				
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Debug"))
 			{
+				if (ImGui::Button("Performance Window"))
+				{
+					showPerformanceWindow = !showPerformanceWindow;
+				}
 				ImGui::EndMenu();
 			}
 			ImGui::SetCursorPosX(ImGui::GetWindowSize().x -35);
@@ -155,6 +171,7 @@ namespace GameEngine {
 					//                                                              out_id_at_dir is the id of the node in the direction we specified earlier, out_id_at_opposite_dir is in the opposite direction
 					auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockspace_id);
 					auto dock_id_down2 = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockspace_id);
+
 					auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.25f, nullptr, &dockspace_id);
 					auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.25f, nullptr, &dockspace_id);
 					auto dock_id_up = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.075f, nullptr, &dockspace_id);
@@ -462,6 +479,12 @@ namespace GameEngine {
 
 			}
 			ImGui::End();
+			if (showPerformanceWindow)
+			{
+				ImGui::Begin("Performance");
+					ProfileInstance::GetInstance()->PrintImGUI();
+				ImGui::End();
+			}
 		}
 		Renderer::GetInstance()->EndImGUI();
 
