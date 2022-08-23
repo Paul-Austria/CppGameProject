@@ -156,8 +156,7 @@ namespace GameEngine {
 #pragma region Desiarilze
 	ProjectData ProjectSerialisation::DeserializeProject(const std::string& path){
 
-		ProjectData data = ProjectData();
-		data.SetPath(path);
+		ProjectData data = ProjectData(path);
 
 		std::string output = GetFileData(path + "/Project.json");
 
@@ -171,6 +170,7 @@ namespace GameEngine {
 		{
 			data.Scenes.push_back(j["sceneFile"]);
 		}
+		Engine::GetInstance()->currentProject.Path = path;
 		data.LoadedScenes[j["topScene"]] = LoadScene(path+"/"+data.GetTopScene()+".scjson");
 		return data;
 	}

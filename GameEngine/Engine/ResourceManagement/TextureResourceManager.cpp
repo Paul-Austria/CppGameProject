@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <Engine/Engine.hpp>
+
 GameEngine::TextureResourceManager* GameEngine::TextureResourceManager::instance = 0;
 
 namespace GameEngine
@@ -54,6 +55,14 @@ namespace GameEngine
     }
 
 
+    void TextureResourceManager::Clear() {
+        for (auto& ob : textures) {
+            ob.second.Delete();
+        }
+        textures.clear();
+        subTextures.clear();
+
+    }
     bool TextureResourceManager::TextureExists(const std::string& search) {
         return textures.find(search) != textures.end();
     }

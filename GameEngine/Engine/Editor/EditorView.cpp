@@ -32,6 +32,7 @@ namespace GameEngine {
 	{
 		Engine::GetInstance()->Reset();
 		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose Project Folder", nullptr, ".");
+		projectIsOpen = true;
 	}
 
 	void EditorView::SaveProject()
@@ -41,9 +42,11 @@ namespace GameEngine {
 
 	void EditorView::OpenProject()
 	{
+		Engine::GetInstance()->Reset();
 		Engine::GetInstance()->currentProject = ProjectSerialisation::DeserializeProject("D:/PR/GameEngineTesting/TestProject");
 		Engine::GetInstance()->currentProject.SetCurrentScene(Engine::GetInstance()->currentProject.GetTopScene());
 		Engine::GetInstance()->projectLoaded = true;
+		projectIsOpen = true;
 		
 	}
 
@@ -84,11 +87,11 @@ namespace GameEngine {
 					ImGuiFileDialog::Instance()->Close();
 				}
 
-				if (ImGui::MenuItem("Save Poject"))
+				if ( projectIsOpen &&ImGui::MenuItem("Save Poject"))
 				{
 					SaveProject();
 				}
-				if (ImGui::MenuItem("New Scene"))
+				if (projectIsOpen && ImGui::MenuItem("New Scene"))
 				{
 				}
 				if (Engine::GetInstance()->projectLoaded)

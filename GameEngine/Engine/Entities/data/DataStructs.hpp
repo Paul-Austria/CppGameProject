@@ -44,6 +44,11 @@ namespace GameEngine
         {
             glBindTexture(GL_TEXTURE_2D, this->ID);
         };
+
+        void Delete() {
+            glDeleteTextures(1,&this->ID);
+            this->ID = -1;
+        };
     };
 
     struct SubTexture

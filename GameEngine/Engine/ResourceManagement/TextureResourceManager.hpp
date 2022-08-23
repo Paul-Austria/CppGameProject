@@ -21,6 +21,7 @@ namespace GameEngine
         int LoadTexture(std::string name, std::string path, TextureLoadType type = nearest);
         int AddSubTexture(std::string name, Texture* texture, glm::vec2 size, glm::vec2 pos);
         bool TextureExists(const std::string& search);
+        void Clear();
         SubTexture* GetSubTexture(const std::string& search);
         Texture* GetTexture(const std::string& search);
 

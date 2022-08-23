@@ -7,6 +7,7 @@
 #include "Renderer/Renderer.hpp"
 #include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>
 #include <Engine/Entities/Entity.hpp>
+#include <Engine/ResourceManagement/TextureResourceManager.hpp>
 #include <Engine/Utils/Profiling/ProfileInstance.hpp>
 
 //#define SOL_ALL_SAFETIES_ON 1
@@ -78,6 +79,7 @@ namespace GameEngine {
 
     void Engine::Reset()
     {
+        TextureResourceManager::GetInstance()->Clear();
         currentProject = ProjectData();
         currentProject.CreateNewScene("FirstScene");
         currentProject.SetCurrentScene("FirstScene");
@@ -86,7 +88,8 @@ namespace GameEngine {
     void Engine::LoadProject(const std::string& path)
     {
         currentProject = ProjectSerialisation::DeserializeProject(path);
-    //    currentProject.SetCurrentScene(currentProject,TopScenePath);
+    //    currentProject.LoadedScenes[j["topScene"]] = ProjectSerialisation::LoadScene(path + "/" + data.GetTopScene() + ".scjson");
+        currentProject.SetCurrentScene(currentProject.GetTopScene());
         projectLoaded = true;
 
     }

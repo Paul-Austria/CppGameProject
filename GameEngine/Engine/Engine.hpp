@@ -25,13 +25,13 @@ namespace GameEngine {
 
 
 		void LoadProject(const std::string& path);
-
 		ProjectData& GetCurrentProject() { return currentProject; }
 
 	private:
 
 		friend class EditorView;
 		friend class ContentBrowser;
+		friend class ProjectSerialisation;
 
 		void DevelopUpdate(float deltaTime);
 		void SceneUpdate(float deltaTime);
