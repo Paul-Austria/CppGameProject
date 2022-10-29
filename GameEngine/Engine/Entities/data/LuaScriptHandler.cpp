@@ -9,6 +9,7 @@
 #include <Engine/Entities/Entity.hpp>
 #include <Engine/Entities/BaseComponents.hpp>
 
+#include <Engine/Utils/IO/Input.hpp>
 #include <Engine/Entities/Entity.hpp>
 
 namespace GameEngine {
@@ -52,10 +53,16 @@ namespace GameEngine {
 			"GetEntityByTag",&Scene::GetEntityByTag
 			);
 		
+		eng.new_usertype<Input>("Input",
+			"IsKeyPressed", &Input::IsKeyPressed
+			);
+
 		eng.new_usertype<Engine>("Engine",
 			"GetInstance", &Engine::GetInstance,
-			"GetCurrentScene", &Engine::GetCurrentScene
+			"GetCurrentScene", &Engine::GetCurrentScene,
+			"GetInput", &Engine::GetInput
 			);
+		
 	}
 	LuaScript LuaScriptHandler::GenerateScript(const std::string& script, Entity entity)
 	{

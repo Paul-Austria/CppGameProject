@@ -94,6 +94,11 @@ namespace GameEngine {
 
     }
 
+    Input* Engine::GetInput()
+    {
+        return &input;
+    }
+
     void Engine::DevelopUpdate(float deltaTime)
     {
         if (currentScene != nullptr)

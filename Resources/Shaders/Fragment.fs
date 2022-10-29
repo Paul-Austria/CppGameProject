@@ -6,7 +6,7 @@ uniform sampler2D texture1;
 uniform vec3 spriteColor;
 
 uniform vec4 inColor;
-uniform bool useColor; 
+uniform bool useColor;
 
 void main()
 {   if(!useColor)

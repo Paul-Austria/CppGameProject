@@ -61,7 +61,29 @@ namespace GameEngine {
 
 
         sh = ShaderProgram("Resources/Shaders/Vertex.vs", "Resources/Shaders/Fragment.fs");
+        screenShader = ShaderProgram("Resources/Shaders/screenShader.vs", "Resources/Shaders/screenShader.fs");
 
+
+        float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+            // positions   // texCoords
+            -1.0f,  1.0f,  0.0f, 1.0f,
+            -1.0f, -1.0f,  0.0f, 0.0f,
+             1.0f, -1.0f,  1.0f, 0.0f,
+
+            -1.0f,  1.0f,  0.0f, 1.0f,
+             1.0f, -1.0f,  1.0f, 0.0f,
+             1.0f,  1.0f,  1.0f, 1.0f
+        };
+
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
         glGenFramebuffers(1, &framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -88,8 +110,9 @@ namespace GameEngine {
 	}
 	void Renderer::BeginRender(CameraComponent& camera, Texture& renderTarget)
 	{
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glDisable(GL_DEPTH_TEST); 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (renderTarget.ID == 0)
         {
@@ -114,6 +137,8 @@ namespace GameEngine {
         GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
         glDrawBuffers(1, DrawBuffers);
 
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
 
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -123,7 +148,7 @@ namespace GameEngine {
         float width = renderTarget.width;
         float height = renderTarget.height;
         float aspect = width/height;
-        glViewport(0, 0, width, height);
+        glm::pers
         glm::mat4 projection = glm::ortho(
             -1.0f / camera.zoom, aspect / camera.zoom,
             1.0f/ camera.zoom, -height/width / camera.zoom,
@@ -164,6 +189,12 @@ namespace GameEngine {
 	void Renderer::EndRender()
 	{
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+  /*      screenShader.useShader();
+        glBindVertexArray(quadVAO);
+        glBindTexture(GL_TEXTURE_2D, currentTarget.ID);	// use the color attachment texture as the texture of the quad plane
+        glDrawArrays(GL_TRIANGLES, 0,6);
+   */ 
 	}
 
 

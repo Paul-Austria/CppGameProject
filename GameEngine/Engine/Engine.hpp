@@ -3,7 +3,7 @@
 #include <string>
 #include <Engine/Scene/ProjectData.hpp>
 #include <memory>
-
+#include <Engine/Utils/IO/Input.hpp>
 namespace GameEngine {
 	class Scene;
 	class EditorView;
@@ -26,7 +26,7 @@ namespace GameEngine {
 
 		void LoadProject(const std::string& path);
 		ProjectData& GetCurrentProject() { return currentProject; }
-
+		Input* GetInput();
 	private:
 
 		friend class EditorView;
@@ -40,6 +40,7 @@ namespace GameEngine {
 		
 
 		ProjectData currentProject;
+		Input input = Input();
 
 		std::shared_ptr<Scene> currentScene;
 		float LastTime = 0;

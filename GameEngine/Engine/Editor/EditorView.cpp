@@ -380,6 +380,12 @@ namespace GameEngine {
 						std::string path = script.scriptPath + "                                                              ";
 						ImGui::InputText("ScriptPath", path.data(), path.size());
 						script.scriptPath = path;
+
+						if (ImGui::Button("Delete Script", ImVec2(ImGui::GetWindowSize().x, 20)))
+						{
+							scene->registry.remove<LuaScript>(currentEntity);
+
+						}
 					}
 				}
 

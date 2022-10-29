@@ -160,7 +160,7 @@ namespace GameEngine {
 			for (auto ent : scripts)
 			{
 				LuaScript& script = registry.get<LuaScript>(ent);
-				script.RunUpdate();
+				script.RunUpdate(deltaTime);
 			}
 
 			ProfileInstance::GetInstance()->EndProfileSession("LuaScripts");
@@ -185,6 +185,11 @@ namespace GameEngine {
 
 			renderer->RenderQuad(rend, transform, activeCam);
 		}
+
+#ifdef DEBUG // renderSelectionBox
+
+#endif // DEBUG // renderSelectionBox
+
 
 		renderer->EndRender(),
 

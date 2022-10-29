@@ -34,6 +34,7 @@ namespace GameEngine {
 	private:
 		static Renderer* instance;
 		ShaderProgram sh;
+		ShaderProgram screenShader;
 		unsigned int lastTexture = -1;
 
 		unsigned int framebuffer = 0;
@@ -41,6 +42,7 @@ namespace GameEngine {
 		unsigned int depthbuffer = 0;
 		int textureSize = 128;
 
+		unsigned int quadVAO, quadVBO;
 
 		static void APIENTRY OpenGlErrorMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
 			const GLchar* message, const void* userParam);
