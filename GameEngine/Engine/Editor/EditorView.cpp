@@ -319,7 +319,7 @@ namespace GameEngine {
 			ImGui::Begin("Scene", &open, flags);
 
 			scene->renderTarget.width = ImGui::GetWindowSize().x;
-			scene->renderTarget.height = ImGui::GetWindowSize().y - 40;
+			scene->renderTarget.height = ImGui::GetWindowSize().y;
 			ImGui::Image((void*)scene->renderTarget.ID, ImVec2(scene->renderTarget.width, scene->renderTarget.height));
 
 

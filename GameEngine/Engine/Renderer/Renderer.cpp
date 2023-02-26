@@ -37,7 +37,7 @@ namespace GameEngine {
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+//		glEnable(GL_CULL_FACE);
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		glEnable(GL_BLEND);
@@ -84,14 +84,14 @@ namespace GameEngine {
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-
+        /*
         glGenFramebuffers(1, &framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
  
         glGenRenderbuffers(1, &depthbuffer);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
 
-
+        */
 	}
 	void Renderer::StartImGUI()
 	{
@@ -110,10 +110,9 @@ namespace GameEngine {
 	}
 	void Renderer::BeginRender(CameraComponent& camera, Texture& renderTarget)
 	{
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        glDisable(GL_DEPTH_TEST); 
+    //    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+/*
         if (renderTarget.ID == 0)
         {
             glGenTextures(1, &renderTarget.ID);
@@ -142,20 +141,184 @@ namespace GameEngine {
 
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        */
 
-        sh.useShader();
-        
-        float width = renderTarget.width;
-        float height = renderTarget.height;
+        float width = Window::GetInstance()->GetWidth();
+        float height = Window::GetInstance()->GetHeigth();
         float aspect = width/height;
-        glm::pers
-        glm::mat4 projection = glm::ortho(
+        printf("%f, %f \n", camera.zoom, height);
+        /*
+                glm::mat4 projection = glm::ortho(
             -1.0f / camera.zoom, aspect / camera.zoom,
             1.0f/ camera.zoom, -height/width / camera.zoom,
             -1000.0f, 1000.0f);
+        */
+        static float zoom = 1;
+        sh.useShader();
+
+        zoom -= 0.01f;
+        float target_width = width;
+        float target_height = height;
+        float A = (target_width / target_height)/100; // target aspect ratio 
+        float V = A ;
+
+        glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1000.0f, 1000.0f);
+
+
+        // ... calculate V as above
+        if (true) {
+            // wide viewport, use full height
+            projection = glm::ortho(-V / A * target_width / 100.0f, V / A * target_width / 100.0f, -target_height / 100.0f, target_height / 100.0f, -1000.0f, 1000.0f);
+        }
+        else {
+            // tall viewport, use full width
+           projection = glm::ortho(-target_width / 100.0f, target_width / 100.0f, -A / V * target_height / 100.0f, A / V * target_height / 100.0f, -1000.0f, 1000.0f);
+        }
+
+
+
+
+       
 
         sh.setMat4("projection", projection);
-        sh.setMat4("view", camera.GetViewMatrix());
+    //   sh.setMat4("view", camera.GetViewMatrix());
+
+        
+
+        float vertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+        };
+        // world space positions of our cubes
+        glm::vec3 cubePositions[] = {
+            glm::vec3(0.0f,  0.0f,  0.0f),
+            glm::vec3(2.0f,  5.0f, -15.0f),
+            glm::vec3(-1.5f, -2.2f, -2.5f),
+            glm::vec3(-3.8f, -2.0f, -12.3f),
+            glm::vec3(2.4f, -0.4f, -3.5f),
+            glm::vec3(-1.7f,  3.0f, -7.5f),
+            glm::vec3(1.3f, -2.0f, -2.5f),
+            glm::vec3(1.5f,  2.0f, -2.5f),
+            glm::vec3(1.5f,  0.2f, -1.5f),
+            glm::vec3(-1.3f,  1.0f, -1.5f)
+        };
+        unsigned int VBO, VAO;
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+
+        glBindVertexArray(VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        // texture coord attribute
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+        
+
+        static float x = 3;
+ //       x += 0.1f;
+        // activate shader
+        sh.useShader();
+        // create transformations
+//        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), width / height, 0.1f, 100.0f);
+
+
+
+        glm::vec3 cameraForword = { 1,0,0 };
+        glm::vec3 CameraRight = { 0,0,1 };
+        glm::vec3 CameraUp = { 0,1,0 };
+        glm::vec3 position = glm::vec3(0, 0, 0);
+
+        /*
+
+        float horizontalAngle = 3.14f;
+        float verticalAngle = 0.0f;
+
+
+        glm::vec3 direction(
+            cos(verticalAngle)* sin(horizontalAngle),
+            sin(verticalAngle),
+            cos(verticalAngle)* cos(horizontalAngle));
+
+        glm::vec3 right = glm::vec3(
+            sin(horizontalAngle - 3.14f / 2.0f),
+            0,
+            cos(horizontalAngle - 3.14f / 2.0f));
+
+        glm::vec3 up = glm::cross(right, direction);
+        */
+        glm::mat4 viewMatrix = glm::mat4(1);
+
+        viewMatrix = glm::lookAt(
+            position,
+            position + cameraForword,
+            CameraUp);
+
+        // pass transformation matrices to the shader
+ //       sh.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        sh.setMat4("view", viewMatrix);
+
+
+        // render boxes
+        glBindVertexArray(VAO);
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            // calculate the model matrix for each object and pass it to shader before drawing
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            model = glm::scale(model, {1,1,1});
+
+
+            sh.setMat4("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
 	}
 	void Renderer::RenderQuad(Renderable& renderable, const TransformComponent& TransformComponent, const CameraComponent& cameraComponent)
@@ -170,8 +333,11 @@ namespace GameEngine {
 
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,  glm::vec3(TransformComponent.position.x,TransformComponent.position.y,TransformComponent.position.z));
-        model = glm::scale(model, glm::vec3(   ((TransformComponent.scale.x) * renderable.GetWidth() * 0.01),( (TransformComponent.scale.y) * renderable.GetHeight() * 0.01), 1.0f));
+        glm::vec3 post = { TransformComponent.position.z, TransformComponent.position.y, TransformComponent.position.x};
+        model = glm::translate(model, post);
+        float angle = 20.0f;
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        sh.setMat4("model", model);
         sh.setMat4("model", model);
         sh.setBool("useColor", renderable.UseColor());
         sh.setVec4("inColor", renderable.GetColor());
@@ -188,13 +354,17 @@ namespace GameEngine {
 	}
 	void Renderer::EndRender()
 	{
+        /*
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT);
-  /*      screenShader.useShader();
+    
+        screenShader.useShader();
         glBindVertexArray(quadVAO);
         glBindTexture(GL_TEXTURE_2D, currentTarget.ID);	// use the color attachment texture as the texture of the quad plane
         glDrawArrays(GL_TRIANGLES, 0,6);
-   */ 
+
+
+    */
 	}
 
 
