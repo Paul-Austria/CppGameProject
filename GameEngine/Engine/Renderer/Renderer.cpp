@@ -153,13 +153,13 @@ namespace GameEngine {
             1.0f/ camera.zoom, -height/width / camera.zoom,
             -1000.0f, 1000.0f);
         */
-        static float zoom = 1;
+        static float zoom = 10;
         sh.useShader();
 
-        zoom -= 0.01f;
+        zoom += 0.01f;
         float target_width = width;
         float target_height = height;
-        float A = (target_width / target_height)/100; // target aspect ratio 
+        float A = (target_width / target_height)/100.0f; // target aspect ratio 
         float V = A ;
 
         glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1000.0f, 1000.0f);
@@ -168,11 +168,11 @@ namespace GameEngine {
         // ... calculate V as above
         if (true) {
             // wide viewport, use full height
-            projection = glm::ortho(-V / A * target_width / 100.0f, V / A * target_width / 100.0f, -target_height / 100.0f, target_height / 100.0f, -1000.0f, 1000.0f);
+            projection = glm::ortho(-V / A * target_width / zoom, V / A * target_width / zoom, -target_height / zoom, target_height / zoom, -1000.0f, 1000.0f);
         }
         else {
             // tall viewport, use full width
-           projection = glm::ortho(-target_width / 100.0f, target_width / 100.0f, -A / V * target_height / 100.0f, A / V * target_height / 100.0f, -1000.0f, 1000.0f);
+           projection = glm::ortho(-target_width / zoom, target_width / zoom, -A / V * target_height / zoom, A / V * target_height / zoom, -1000.0f, 1000.0f);
         }
 
 
@@ -258,20 +258,11 @@ namespace GameEngine {
         glEnableVertexAttribArray(1);
         
 
-        static float x = 3;
- //       x += 0.1f;
-        // activate shader
-        sh.useShader();
-        // create transformations
-//        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), width / height, 0.1f, 100.0f);
-
-
 
         glm::vec3 cameraForword = { 1,0,0 };
         glm::vec3 CameraRight = { 0,0,1 };
         glm::vec3 CameraUp = { 0,1,0 };
-        glm::vec3 position = glm::vec3(0, 0, 0);
+        glm::vec3 position = glm::vec3(1, 0, 0);
 
         /*
 
