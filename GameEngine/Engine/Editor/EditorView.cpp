@@ -316,10 +316,10 @@ namespace GameEngine {
 
 			flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 			bool open = true;
+			/*
 			ImGui::Begin("Scene", &open, flags);
 
-			scene->renderTarget.width = ImGui::GetWindowSize().x;
-			scene->renderTarget.height = ImGui::GetWindowSize().y;
+
 			ImGui::Image((void*)scene->renderTarget.ID, ImVec2(scene->renderTarget.width, scene->renderTarget.height));
 
 
@@ -330,7 +330,7 @@ namespace GameEngine {
 
 
 			ImGui::End();
-
+			*/
 
 			ImGui::Begin("Entity Info");
 

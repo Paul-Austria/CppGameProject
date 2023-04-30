@@ -37,7 +37,7 @@ namespace GameEngine {
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glEnable(GL_DEPTH_TEST);
-//		glEnable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		glEnable(GL_BLEND);
@@ -84,14 +84,14 @@ namespace GameEngine {
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-        /*
+    /*
         glGenFramebuffers(1, &framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
  
         glGenRenderbuffers(1, &depthbuffer);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
-
         */
+        
 	}
 	void Renderer::StartImGUI()
 	{
@@ -111,7 +111,7 @@ namespace GameEngine {
 	void Renderer::BeginRender(CameraComponent& camera, Texture& renderTarget)
 	{
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+/*        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
         if (renderTarget.ID == 0)
         {
@@ -120,7 +120,7 @@ namespace GameEngine {
         currentTarget = renderTarget;
         glBindTexture(GL_TEXTURE_2D, renderTarget.ID);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderTarget.width, renderTarget.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, currentTarget.width, currentTarget.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -128,7 +128,7 @@ namespace GameEngine {
 
 
         glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, renderTarget.width, renderTarget.height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, currentTarget.width, currentTarget.height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
 
 
@@ -139,9 +139,9 @@ namespace GameEngine {
 
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-
+        */
+        //Window::GetInstance()->GetWidth()
+        // Window::GetInstance()->GetHeigth()
         float width = Window::GetInstance()->GetWidth();
         float height = Window::GetInstance()->GetHeigth();
         float aspect = width/height;
@@ -191,12 +191,6 @@ namespace GameEngine {
 	}
 	void Renderer::RenderQuad(Renderable& renderable, const TransformComponent& TransformComponent, const CameraComponent& cameraComponent)
 	{
-        float width = currentTarget.width / 2.0f;
-        float height = currentTarget.height / 2.0f;
-        float maxPosX = cameraComponent.position.x + width + cameraComponent.pixelBuffer;
-        float minPosX = cameraComponent.position.x - width - cameraComponent.pixelBuffer;
-        float minPosY = cameraComponent.position.y - width - cameraComponent.pixelBuffer;
-        float maxPosY = cameraComponent.position.y + height + cameraComponent.pixelBuffer;
 
 
 
