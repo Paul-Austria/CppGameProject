@@ -110,9 +110,9 @@ namespace GameEngine {
 	}
 	void Renderer::BeginRender(CameraComponent& camera, Texture& renderTarget)
 	{
-    //    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-/*
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
         if (renderTarget.ID == 0)
         {
             glGenTextures(1, &renderTarget.ID);
@@ -136,12 +136,11 @@ namespace GameEngine {
         GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
         glDrawBuffers(1, DrawBuffers);
 
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
 
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        */
+
+
 
         float width = Window::GetInstance()->GetWidth();
         float height = Window::GetInstance()->GetHeigth();
@@ -173,53 +172,11 @@ namespace GameEngine {
        
 
         sh.setMat4("projection", projection);
-    //   sh.setMat4("view", camera.GetViewMatrix());
-
-        
-
-        float vertices[] = {
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        };
-        unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-        };
-        static float x = 0;
-        x += 0.05f;
-        // world space positions of our cubes
-        glm::vec3 cubePositions[] = {
-            glm::vec3(0.0f,  0.0f,  x),
-        };
-        unsigned int VBO, VAO, EBO;
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        glGenBuffers(1, &EBO);
-
-        glBindVertexArray(VAO);
-
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        // texture coord attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-        
-
 
         glm::vec3 cameraForword = { 1,0,0 };
         glm::vec3 CameraRight = { 0,0,1 };
         glm::vec3 CameraUp = { 0,1,0 };
-        glm::vec3 position = glm::vec3(1, 0, 0);
+        glm::vec3 position = { 1,camera.position };
 
         glm::mat4 viewMatrix = glm::mat4(1);
 
@@ -230,23 +187,6 @@ namespace GameEngine {
 
         sh.setMat4("view", viewMatrix);
 
-
-        // render boxes
-        glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 1; i++)
-        {
-            // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
-            model = glm::scale(model, {1,1,1});
-
-
-            sh.setMat4("model", model);
-
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        }
 
 	}
 	void Renderer::RenderQuad(Renderable& renderable, const TransformComponent& TransformComponent, const CameraComponent& cameraComponent)
@@ -282,6 +222,7 @@ namespace GameEngine {
 	}
 	void Renderer::EndRender()
 	{
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         /*
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT);
