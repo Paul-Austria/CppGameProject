@@ -146,17 +146,9 @@ namespace GameEngine {
         float width = Window::GetInstance()->GetWidth();
         float height = Window::GetInstance()->GetHeigth();
         float aspect = width/height;
-        printf("%f, %f \n", camera.zoom, height);
-        /*
-                glm::mat4 projection = glm::ortho(
-            -1.0f / camera.zoom, aspect / camera.zoom,
-            1.0f/ camera.zoom, -height/width / camera.zoom,
-            -1000.0f, 1000.0f);
-        */
-        static float zoom = 10;
+        static float zoom = 100;
         sh.useShader();
 
-        zoom += 0.01f;
         float target_width = width;
         float target_height = height;
         float A = (target_width / target_height)/100.0f; // target aspect ratio 
@@ -186,70 +178,35 @@ namespace GameEngine {
         
 
         float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
         -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
         -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
         -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
         };
+        unsigned int indices[] = {
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
+        };
+        static float x = 0;
+        x += 0.05f;
         // world space positions of our cubes
         glm::vec3 cubePositions[] = {
-            glm::vec3(0.0f,  0.0f,  0.0f),
-            glm::vec3(2.0f,  5.0f, -15.0f),
-            glm::vec3(-1.5f, -2.2f, -2.5f),
-            glm::vec3(-3.8f, -2.0f, -12.3f),
-            glm::vec3(2.4f, -0.4f, -3.5f),
-            glm::vec3(-1.7f,  3.0f, -7.5f),
-            glm::vec3(1.3f, -2.0f, -2.5f),
-            glm::vec3(1.5f,  2.0f, -2.5f),
-            glm::vec3(1.5f,  0.2f, -1.5f),
-            glm::vec3(-1.3f,  1.0f, -1.5f)
+            glm::vec3(0.0f,  0.0f,  x),
         };
-        unsigned int VBO, VAO;
+        unsigned int VBO, VAO, EBO;
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
 
         glBindVertexArray(VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
         // position attribute
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
@@ -264,24 +221,6 @@ namespace GameEngine {
         glm::vec3 CameraUp = { 0,1,0 };
         glm::vec3 position = glm::vec3(1, 0, 0);
 
-        /*
-
-        float horizontalAngle = 3.14f;
-        float verticalAngle = 0.0f;
-
-
-        glm::vec3 direction(
-            cos(verticalAngle)* sin(horizontalAngle),
-            sin(verticalAngle),
-            cos(verticalAngle)* cos(horizontalAngle));
-
-        glm::vec3 right = glm::vec3(
-            sin(horizontalAngle - 3.14f / 2.0f),
-            0,
-            cos(horizontalAngle - 3.14f / 2.0f));
-
-        glm::vec3 up = glm::cross(right, direction);
-        */
         glm::mat4 viewMatrix = glm::mat4(1);
 
         viewMatrix = glm::lookAt(
@@ -289,26 +228,24 @@ namespace GameEngine {
             position + cameraForword,
             CameraUp);
 
-        // pass transformation matrices to the shader
- //       sh.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         sh.setMat4("view", viewMatrix);
 
 
         // render boxes
         glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 10; i++)
+        for (unsigned int i = 0; i < 1; i++)
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.3f, 0.5f));
             model = glm::scale(model, {1,1,1});
 
 
             sh.setMat4("model", model);
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
 
 	}
@@ -326,7 +263,7 @@ namespace GameEngine {
         glm::mat4 model = glm::mat4(1.0f);
         glm::vec3 post = { TransformComponent.position.z, TransformComponent.position.y, TransformComponent.position.x};
         model = glm::translate(model, post);
-        float angle = 20.0f;
+        float angle = 0.0f;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         sh.setMat4("model", model);
         sh.setMat4("model", model);

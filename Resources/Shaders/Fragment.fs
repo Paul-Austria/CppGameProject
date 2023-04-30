@@ -1,12 +1,23 @@
 #version 330 core
-out vec4 FragColor;
-
-in vec2 TexCoord;
+in vec2 TexCoords;
+out vec4 color;
 
 uniform sampler2D texture1;
-uniform sampler2D texture2;
+uniform vec3 spriteColor;
+
+uniform vec4 inColor;
+uniform bool useColor; 
 
 void main()
-{
-    FragColor = vec4(1.0f,1.0f,1.0f,1.0f);
-}
+{   if(!useColor)
+    {
+        vec4 texture = texture(texture1, TexCoords);
+        if(texture.a <= 0)
+        {
+            discard;
+        }
+        color = texture;
+    }else{
+        color = inColor;
+    }
+}  
