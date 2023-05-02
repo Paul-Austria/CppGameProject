@@ -147,12 +147,12 @@ namespace GameEngine {
         //Window::GetInstance()->GetWidth()
         // Window::GetInstance()->GetHeigth()
         float aspect = width/height;
-        float zoom = 100;
+        float zoom = camera.zoom * 100;
         sh.useShader();
 
         float target_width = width;
         float target_height = height;
-        float A = (target_width / target_height)/1.0f; // target aspect ratio 
+        float A = (target_width / target_height)/99999.0f; // target aspect ratio 
         float V = A ;
 
         glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1000.0f, 1000.0f);
@@ -197,11 +197,11 @@ namespace GameEngine {
 
 
         glm::mat4 model = glm::mat4(1.0f);
-        glm::vec3 post = { TransformComponent.position.z , -TransformComponent.position.y - 0.27f , TransformComponent.position.x - 0.1f};
+        glm::vec3 post = { TransformComponent.position.z * 100 , -TransformComponent.position.y , TransformComponent.position.x};
         model = glm::translate(model, post);
         float angle = TransformComponent.rotation;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::scale(model, { 1 ,TransformComponent.scale.y * cameraComponent.zoom, TransformComponent.scale.x * cameraComponent.zoom });
+        model = glm::scale(model, { 1 ,TransformComponent.scale.y, TransformComponent.scale.x});
         sh.setMat4("model", model);
         sh.setMat4("model", model);
         sh.setBool("useColor", renderable.UseColor());
