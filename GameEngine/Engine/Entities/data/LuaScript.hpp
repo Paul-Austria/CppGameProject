@@ -40,13 +40,14 @@ namespace GameEngine {
             alreadyRun = false;
         }
 
-        void RunUpdate() {
+        void RunUpdate(float deltaTime) {
             if (!alreadyRun)
             {
                 alreadyRun = true;
                 try
                 {
-                    this->parentHandler->lua.script("setup()", this->environment);
+                    sol::function update = this->environment["update"];
+                    update(deltaTime);
                 }
                 catch (const std::exception& exc)
                 {
@@ -56,8 +57,8 @@ namespace GameEngine {
             }
             try
             {
-
-                this->parentHandler->lua.script("update()", this->environment);
+                sol::function update = this->environment["update"];
+                update(deltaTime);
             }
             catch (const std::exception& exc)
             {

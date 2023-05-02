@@ -8,7 +8,7 @@ namespace GameEngine {
 	{
 	public:
 		~ContentBrowser();
-		ContentBrowser() = default;
+		ContentBrowser();
 		void Render(EditorView* editor);
 	private:
 		std::string rootPath;

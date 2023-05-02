@@ -316,21 +316,24 @@ namespace GameEngine {
 
 			flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 			bool open = true;
+			
 			ImGui::Begin("Scene", &open, flags);
 
+
 			scene->renderTarget.width = ImGui::GetWindowSize().x;
-			scene->renderTarget.height = ImGui::GetWindowSize().y - 40;
-			ImGui::Image((void*)scene->renderTarget.ID, ImVec2(scene->renderTarget.width, scene->renderTarget.height));
+			scene->renderTarget.height = ImGui::GetWindowSize().y;
+	
+
+			ImGui::Image((void*)scene->renderTarget.ID, ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y));
 
 
-
+			
 			if (ImGui::IsItemHovered()) {
 				scene->UpdateEditorCam(deltaTime);
 			}
 
-
 			ImGui::End();
-
+			
 
 			ImGui::Begin("Entity Info");
 
@@ -380,6 +383,12 @@ namespace GameEngine {
 						std::string path = script.scriptPath + "                                                              ";
 						ImGui::InputText("ScriptPath", path.data(), path.size());
 						script.scriptPath = path;
+
+						if (ImGui::Button("Delete Script", ImVec2(ImGui::GetWindowSize().x, 20)))
+						{
+							scene->registry.remove<LuaScript>(currentEntity);
+
+						}
 					}
 				}
 

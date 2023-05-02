@@ -20,6 +20,11 @@ namespace GameEngine
 
 	}
 
+	ContentBrowser::ContentBrowser()
+	{
+		TextureResourceManager::GetInstance()->LoadTexture("GUI::File", "Resources/Textures/GuiImages/FileImage.png");
+	}
+
 
 	void ContentBrowser::HandleFileClick(std::string name, EditorView* editor)
 	{
@@ -96,11 +101,11 @@ namespace GameEngine
 		int columnSize = (int)ImGui::GetWindowWidth() / 100;
 		ImGui::Columns(columnSize, "Files",false);
 
-
+		int counter = 0;
 		for (const auto& entry : std::filesystem::directory_iterator(rootPath+"/"+currentSubPath)) {
 			std::string pa = std::string();
 			pa = entry.path().filename().string();
-
+			counter++;
 
 
 			if (entry.is_directory())
@@ -128,10 +133,18 @@ namespace GameEngine
 						textureID = TextureResourceManager::GetInstance()->GetTexture(currentSubPath + pa)->ID;
 					}
 				}
+				else
+				{
+					textureID = TextureResourceManager::GetInstance()->GetTexture("GUI::File")->ID;
+				}
+
+
 				if (ImGui::ImageButton((void*)textureID, ImVec2(100, 100)))
 				{
+					
 					HandleFileClick(currentSubPath + pa,editor);
 				}
+
 				auto windowWidth = ImGui::GetWindowWidth() / columnSize;
 				auto textWidth = ImGui::CalcTextSize(pa.c_str()).x;
 				ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f + ImGui::GetCursorPosX());
@@ -149,6 +162,10 @@ namespace GameEngine
 		{
 			if (ImGui::MenuItem("Create_New_File"))
 			{
+			}
+			if (ImGui::MenuItem("Create_New_Folder"))
+			{
+
 			}
 
 			ImGui::EndPopup();

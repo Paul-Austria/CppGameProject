@@ -18,7 +18,7 @@ namespace GameEngine
     struct Texture
     {
         unsigned int ID = 0;
-        unsigned int width = 10, height = 10;
+        unsigned int width = 537, height = 345;
         std::string name = "";
         Texture() = default;
         Texture(unsigned int width, unsigned int height, unsigned char* data,std::string name="", TextureLoadType loadType = nearest)

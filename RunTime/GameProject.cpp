@@ -11,7 +11,7 @@ using namespace std;
 int main()
 {
 
-	GameEngine::Engine::GetInstance()->Init(1920/2,1080/2,"Engine");
+	GameEngine::Engine::GetInstance()->Init(537,385,"Engine");
 //	GameEngine::Engine::GetInstance()->SetCurrentScene(scene);
 	GameEngine::Engine::GetInstance()->Loop();
 	return 0;

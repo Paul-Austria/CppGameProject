@@ -61,15 +61,37 @@ namespace GameEngine {
 
 
         sh = ShaderProgram("Resources/Shaders/Vertex.vs", "Resources/Shaders/Fragment.fs");
+        screenShader = ShaderProgram("Resources/Shaders/screenShader.vs", "Resources/Shaders/screenShader.fs");
 
 
+        float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+            // positions   // texCoords
+            -1.0f,  1.0f,  0.0f, 1.0f,
+            -1.0f, -1.0f,  0.0f, 0.0f,
+             1.0f, -1.0f,  1.0f, 0.0f,
+
+            -1.0f,  1.0f,  0.0f, 1.0f,
+             1.0f, -1.0f,  1.0f, 0.0f,
+             1.0f,  1.0f,  1.0f, 1.0f
+        };
+
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+  
         glGenFramebuffers(1, &framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
  
         glGenRenderbuffers(1, &depthbuffer);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
-
-
+    
+        glGenRenderbuffers(1, &rbo);
 	}
 	void Renderer::StartImGUI()
 	{
@@ -88,65 +110,99 @@ namespace GameEngine {
 	}
 	void Renderer::BeginRender(CameraComponent& camera, Texture& renderTarget)
 	{
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        float width = renderTarget.width;
+        float height = renderTarget.height;
+
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glViewport(0, 0, width, height);
+
+        glEnable(GL_DEPTH_TEST);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (renderTarget.ID == 0)
         {
             glGenTextures(1, &renderTarget.ID);
         }
+
         currentTarget = renderTarget;
+        
         glBindTexture(GL_TEXTURE_2D, renderTarget.ID);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderTarget.width, renderTarget.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTarget.ID, 0);
 
 
-        glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, renderTarget.width, renderTarget.height);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
-
-
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTarget.ID, 0);
-        GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-        glDrawBuffers(1, DrawBuffers);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); // use a single renderbuffer object for both a depth AND stencil buffer.
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        sh.useShader();
-        
-        float width = renderTarget.width;
-        float height = renderTarget.height;
+      
+        //Window::GetInstance()->GetWidth()
+        // Window::GetInstance()->GetHeigth()
         float aspect = width/height;
-        glViewport(0, 0, width, height);
-        glm::mat4 projection = glm::ortho(
-            -1.0f / camera.zoom, aspect / camera.zoom,
-            1.0f/ camera.zoom, -height/width / camera.zoom,
-            -1000.0f, 1000.0f);
+        float zoom = 100;
+        sh.useShader();
+
+        float target_width = width;
+        float target_height = height;
+        float A = (target_width / target_height)/1.0f; // target aspect ratio 
+        float V = A ;
+
+        glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1000.0f, 1000.0f);
+
+
+        // ... calculate V as above
+        if (true) {
+            // wide viewport, use full height
+            projection = glm::ortho(-V / A * target_width / zoom, V / A * target_width / zoom, -target_height / zoom, target_height / zoom, -1000.0f, 1000.0f);
+        }
+        else {
+            // tall viewport, use full width
+           projection = glm::ortho(-target_width / zoom, target_width / zoom, -A / V * target_height / zoom, A / V * target_height / zoom, -1000.0f, 1000.0f);
+        }
+
+
+
+
+       
 
         sh.setMat4("projection", projection);
-        sh.setMat4("view", camera.GetViewMatrix());
+
+        glm::vec3 cameraForword = { 1,0,0 };
+        glm::vec3 CameraRight = { 0,0,1 };
+        glm::vec3 CameraUp = { 0,1,0 };
+        glm::vec3 position = { 1,camera.position.y, camera.position.x };
+
+        glm::mat4 viewMatrix = glm::mat4(1);
+
+        viewMatrix = glm::lookAt(
+            position,
+            position + cameraForword,
+            CameraUp);
+
+        sh.setMat4("view", viewMatrix);
+
 
 	}
 	void Renderer::RenderQuad(Renderable& renderable, const TransformComponent& TransformComponent, const CameraComponent& cameraComponent)
 	{
-        float width = currentTarget.width / 2.0f;
-        float height = currentTarget.height / 2.0f;
-        float maxPosX = cameraComponent.position.x + width + cameraComponent.pixelBuffer;
-        float minPosX = cameraComponent.position.x - width - cameraComponent.pixelBuffer;
-        float minPosY = cameraComponent.position.y - width - cameraComponent.pixelBuffer;
-        float maxPosY = cameraComponent.position.y + height + cameraComponent.pixelBuffer;
 
 
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,  glm::vec3(TransformComponent.position.x,TransformComponent.position.y,TransformComponent.position.z));
-        model = glm::scale(model, glm::vec3(   ((TransformComponent.scale.x) * renderable.GetWidth() * 0.01),( (TransformComponent.scale.y) * renderable.GetHeight() * 0.01), 1.0f));
+        glm::vec3 post = { TransformComponent.position.z , -TransformComponent.position.y - 0.27f , TransformComponent.position.x - 0.1f};
+        model = glm::translate(model, post);
+        float angle = TransformComponent.rotation;
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, { 1 ,TransformComponent.scale.y * cameraComponent.zoom, TransformComponent.scale.x * cameraComponent.zoom });
+        sh.setMat4("model", model);
         sh.setMat4("model", model);
         sh.setBool("useColor", renderable.UseColor());
         sh.setVec4("inColor", renderable.GetColor());
@@ -164,6 +220,18 @@ namespace GameEngine {
 	void Renderer::EndRender()
 	{
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+    
+
+                /*
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+    
+        screenShader.useShader();
+        glBindVertexArray(quadVAO);
+        glBindTexture(GL_TEXTURE_2D, currentTarget.ID);	// use the color attachment texture as the texture of the quad plane
+        glDrawArrays(GL_TRIANGLES, 0,6);
+    */
 	}
 
 

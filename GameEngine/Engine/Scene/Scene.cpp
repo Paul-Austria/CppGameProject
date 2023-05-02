@@ -160,7 +160,7 @@ namespace GameEngine {
 			for (auto ent : scripts)
 			{
 				LuaScript& script = registry.get<LuaScript>(ent);
-				script.RunUpdate();
+				script.RunUpdate(deltaTime);
 			}
 
 			ProfileInstance::GetInstance()->EndProfileSession("LuaScripts");
@@ -185,6 +185,11 @@ namespace GameEngine {
 
 			renderer->RenderQuad(rend, transform, activeCam);
 		}
+
+#ifdef DEBUG // renderSelectionBox
+
+#endif // DEBUG // renderSelectionBox
+
 
 		renderer->EndRender(),
 
@@ -224,12 +229,12 @@ namespace GameEngine {
 		}
 		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_Q) == GLFW_PRESS)
 		{
-			editorCam.zoom += 0.01f;
+			editorCam.zoom += 1.0f;
 		}
 
 		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_E) == GLFW_PRESS)
 		{
-			editorCam.zoom -= 0.01f;
+			editorCam.zoom -= 1.0f;
 		}
 	}
 
