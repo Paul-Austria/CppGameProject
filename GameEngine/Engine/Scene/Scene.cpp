@@ -229,12 +229,12 @@ namespace GameEngine {
 		}
 		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_Q) == GLFW_PRESS)
 		{
-			editorCam.zoom += 0.01f;
+			editorCam.zoom += 1.0f;
 		}
 
 		if (glfwGetKey(Window::GetInstance()->GetWindow(), GLFW_KEY_E) == GLFW_PRESS)
 		{
-			editorCam.zoom -= 0.01f;
+			editorCam.zoom -= 1.0f;
 		}
 	}
 

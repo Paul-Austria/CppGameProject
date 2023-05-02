@@ -147,7 +147,7 @@ namespace GameEngine {
         //Window::GetInstance()->GetWidth()
         // Window::GetInstance()->GetHeigth()
         float aspect = width/height;
-        static float zoom = 100;
+        float zoom = 100;
         sh.useShader();
 
         float target_width = width;
@@ -178,7 +178,7 @@ namespace GameEngine {
         glm::vec3 cameraForword = { 1,0,0 };
         glm::vec3 CameraRight = { 0,0,1 };
         glm::vec3 CameraUp = { 0,1,0 };
-        glm::vec3 position = { 1,camera.position };
+        glm::vec3 position = { 1,camera.position.y, camera.position.x };
 
         glm::mat4 viewMatrix = glm::mat4(1);
 
@@ -197,11 +197,11 @@ namespace GameEngine {
 
 
         glm::mat4 model = glm::mat4(1.0f);
-        glm::vec3 post = { TransformComponent.position.z , -TransformComponent.position.y - 0.25f , TransformComponent.position.x - 0.1f};
+        glm::vec3 post = { TransformComponent.position.z , -TransformComponent.position.y - 0.27f , TransformComponent.position.x - 0.1f};
         model = glm::translate(model, post);
-        float angle = 0.0f;
-        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-        model = glm::scale(model, { 1 ,TransformComponent.scale.y, TransformComponent.scale.x });
+        float angle = TransformComponent.rotation;
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, { 1 ,TransformComponent.scale.y * cameraComponent.zoom, TransformComponent.scale.x * cameraComponent.zoom });
         sh.setMat4("model", model);
         sh.setMat4("model", model);
         sh.setBool("useColor", renderable.UseColor());
@@ -222,6 +222,16 @@ namespace GameEngine {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT);
     
+
+                /*
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+    
+        screenShader.useShader();
+        glBindVertexArray(quadVAO);
+        glBindTexture(GL_TEXTURE_2D, currentTarget.ID);	// use the color attachment texture as the texture of the quad plane
+        glDrawArrays(GL_TRIANGLES, 0,6);
+    */
 	}
 
 
