@@ -61,7 +61,7 @@ namespace GameEngine {
 
 		if (glewInit() != GLEW_OK)
 			spdlog::critical("glew not init");
-
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, width, height);
 
 		return 0;
@@ -69,6 +69,7 @@ namespace GameEngine {
 
 	void Window::framebuffer_size_callback(GLFWwindow* w, int wi, int h)
 	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, wi, h);
 
 

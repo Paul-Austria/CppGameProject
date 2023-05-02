@@ -42,6 +42,7 @@ namespace GameEngine {
 		unsigned int depthbuffer = 0;
 		int textureSize = 128;
 
+		unsigned int rbo;
 		unsigned int quadVAO, quadVBO;
 
 		static void APIENTRY OpenGlErrorMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,

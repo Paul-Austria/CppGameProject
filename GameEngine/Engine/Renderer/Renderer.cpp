@@ -84,14 +84,14 @@ namespace GameEngine {
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    /*
+  
         glGenFramebuffers(1, &framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
  
         glGenRenderbuffers(1, &depthbuffer);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
-        */
-        
+    
+        glGenRenderbuffers(1, &rbo);
 	}
 	void Renderer::StartImGUI()
 	{
@@ -110,47 +110,49 @@ namespace GameEngine {
 	}
 	void Renderer::BeginRender(CameraComponent& camera, Texture& renderTarget)
 	{
+        float width = renderTarget.width;
+        float height = renderTarget.height;
+
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glViewport(0, 0, width, height);
+
+        glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-/*        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
         if (renderTarget.ID == 0)
         {
             glGenTextures(1, &renderTarget.ID);
         }
+
         currentTarget = renderTarget;
+        
         glBindTexture(GL_TEXTURE_2D, renderTarget.ID);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, currentTarget.width, currentTarget.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTarget.ID, 0);
 
 
-        glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, currentTarget.width, currentTarget.height);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
-
-
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTarget.ID, 0);
-        GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-        glDrawBuffers(1, DrawBuffers);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); // use a single renderbuffer object for both a depth AND stencil buffer.
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        */
+      
         //Window::GetInstance()->GetWidth()
         // Window::GetInstance()->GetHeigth()
-        float width = Window::GetInstance()->GetWidth();
-        float height = Window::GetInstance()->GetHeigth();
         float aspect = width/height;
         static float zoom = 100;
         sh.useShader();
 
         float target_width = width;
         float target_height = height;
-        float A = (target_width / target_height)/100.0f; // target aspect ratio 
+        float A = (target_width / target_height)/1.0f; // target aspect ratio 
         float V = A ;
 
         glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1000.0f, 1000.0f);
@@ -195,10 +197,11 @@ namespace GameEngine {
 
 
         glm::mat4 model = glm::mat4(1.0f);
-        glm::vec3 post = { TransformComponent.position.z, TransformComponent.position.y, TransformComponent.position.x};
+        glm::vec3 post = { TransformComponent.position.z , -TransformComponent.position.y - 0.25f , TransformComponent.position.x - 0.1f};
         model = glm::translate(model, post);
         float angle = 0.0f;
         model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        model = glm::scale(model, { 1 ,TransformComponent.scale.y, TransformComponent.scale.x });
         sh.setMat4("model", model);
         sh.setMat4("model", model);
         sh.setBool("useColor", renderable.UseColor());
@@ -217,17 +220,8 @@ namespace GameEngine {
 	void Renderer::EndRender()
 	{
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        /*
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT);
     
-        screenShader.useShader();
-        glBindVertexArray(quadVAO);
-        glBindTexture(GL_TEXTURE_2D, currentTarget.ID);	// use the color attachment texture as the texture of the quad plane
-        glDrawArrays(GL_TRIANGLES, 0,6);
-
-
-    */
 	}
 
 

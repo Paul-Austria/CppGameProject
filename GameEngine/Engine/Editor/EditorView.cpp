@@ -316,21 +316,27 @@ namespace GameEngine {
 
 			flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 			bool open = true;
-			/*
+			
 			ImGui::Begin("Scene", &open, flags);
 
 
-			ImGui::Image((void*)scene->renderTarget.ID, ImVec2(scene->renderTarget.width, scene->renderTarget.height));
+			scene->renderTarget.width = ImGui::GetWindowSize().x;
+			scene->renderTarget.height = ImGui::GetWindowSize().y;
+			printf("\n==========================\n");
+			printf("\n%i\n", scene->renderTarget.width);
+			printf("\n%i\n", scene->renderTarget.height);
+			printf("==========================\n");
+
+			ImGui::Image((void*)scene->renderTarget.ID, ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y));
 
 
-
+			
 			if (ImGui::IsItemHovered()) {
 				scene->UpdateEditorCam(deltaTime);
 			}
 
-
 			ImGui::End();
-			*/
+			
 
 			ImGui::Begin("Entity Info");
 
