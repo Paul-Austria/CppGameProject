@@ -9,7 +9,7 @@
 #include <Engine/Entities/Entity.hpp>
 #include <Engine/ResourceManagement/TextureResourceManager.hpp>
 #include <Engine/Utils/Profiling/ProfileInstance.hpp>
-
+#include "Engine/Editor/EditorView.hpp"
 //#define SOL_ALL_SAFETIES_ON 1
 //#include <sol/sol.hpp>
 //#include <Engine/sol/assert.hpp>
@@ -20,9 +20,14 @@ std::unique_ptr<GameEngine::Engine> GameEngine::Engine::instance = 0;
 namespace GameEngine {
     Engine::Engine()
     {
+#ifdef  DEBUG
+        editorView = new EditorView();
+#endif //  DEBUG
+
     }
     Engine::~Engine()
     {
+        delete editorView;
     //    delete instance;
     }
     void Engine::Init(int widht, int height,const std::string& title , const std::string& ProjectPath, bool isFullScreen)
@@ -52,6 +57,13 @@ namespace GameEngine {
         LastTime = glfwGetTime();
         while (isRunning && !glfwWindowShouldClose(Window::GetInstance()->GetWindow()))
         {
+            if (toChangeScene)
+            {
+                toChangeScene = false;
+                currentScene->ChangeStatus(Stopped);
+                currentScene = currentProject.LoadedScenes[toChangeSceneName];
+//                currentScene->ChangeStatus(Running);
+            }
             ProfileInstance::GetInstance()->StartProfileSession("Loop");
             float timeDiff = LastTime - glfwGetTime();
             LastTime = glfwGetTime();
@@ -81,14 +93,13 @@ namespace GameEngine {
         TextureResourceManager::GetInstance()->Clear();
         currentProject = ProjectData();
         currentProject.CreateNewScene("FirstScene");
-        currentProject.SetCurrentScene("FirstScene");
+        currentProject.SetCurrentScene("FirstScene", false);
     }
 
     void Engine::LoadProject(const std::string& path)
     {
         currentProject = ProjectSerialisation::DeserializeProject(path);
-    //    currentProject.LoadedScenes[j["topScene"]] = ProjectSerialisation::LoadScene(path + "/" + data.GetTopScene() + ".scjson");
-        currentProject.SetCurrentScene(currentProject.GetTopScene());
+        currentProject.SetCurrentScene(currentProject.GetTopScene(), false);
         projectLoaded = true;
 
     }
@@ -98,11 +109,18 @@ namespace GameEngine {
         return &input;
     }
 
+    void Engine::PrepareSceneChange(const std::string& nextScene)
+    {
+        toChangeScene = true;
+        toChangeSceneName = nextScene;
+    }
+
     void Engine::DevelopUpdate(float deltaTime)
     {
         if (currentScene != nullptr)
         {
-            currentScene->EditorUpdate(deltaTime);
+            editorView->SetCurrentScene(currentScene);
+            editorView->EditorUpdate(deltaTime);
         }
     }
     void Engine::SceneUpdate(float deltaTime)

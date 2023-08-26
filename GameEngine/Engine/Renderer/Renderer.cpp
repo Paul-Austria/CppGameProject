@@ -146,34 +146,19 @@ namespace GameEngine {
       
         //Window::GetInstance()->GetWidth()
         // Window::GetInstance()->GetHeigth()
-        float aspect = width/height;
         float zoom = camera.zoom * 100;
         sh.useShader();
 
         float target_width = width;
         float target_height = height;
-        float A = (target_width / target_height); // target aspect ratio 
-        float V = A ;
-        glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1000.0f, 1000.0f);
+        float A = (target_width / target_height); // target aspect ratio
 
-
-        // ... calculate V as above
-        if (true) {
-            // wide viewport, use full height
-            projection = glm::ortho(-V / A * target_width / zoom, V / A * target_width / zoom, -target_height / zoom, target_height / zoom, -1000.0f, 1000.0f);
-        }
-        else {
-            // tall viewport, use full width
-           projection = glm::ortho(-target_width / zoom, target_width / zoom, -A / V * target_height / zoom, A / V * target_height / zoom, -1000.0f, 1000.0f);
-        }
-
-
-
-
-       
+        // Define your orthographic projection matrix without adjusting for screen size
+        glm::mat4 projection = glm::ortho(-target_width / (2.0f * zoom), target_width / (2.0f * zoom),
+            -target_height / (2.0f * zoom), target_height / (2.0f * zoom),
+            -1000.0f, 1000.0f);
 
         sh.setMat4("projection", projection);
-
         glm::vec3 cameraForword = { 1,0,0 };
         glm::vec3 CameraRight = { 0,0,1 };
         glm::vec3 CameraUp = { 0,1,0 };

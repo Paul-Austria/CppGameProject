@@ -14,6 +14,7 @@
 #include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>c
 #include <Engine/Engine.hpp>
 
+#include <Engine/Entities/Entity.hpp>
 #include <Engine/Entities/data/DataStructs.hpp>
 #include <Engine/Entities/data/LuaScript.hpp>
 
@@ -22,9 +23,8 @@
 #include <Windows.h>
 
 namespace GameEngine {
-	EditorView::EditorView(Scene* currentScene)
+	EditorView::EditorView()
 	{
-		scene = currentScene;
 		browser = ContentBrowser();
 	}
 
@@ -43,11 +43,14 @@ namespace GameEngine {
 	void EditorView::OpenProject()
 	{
 		Engine::GetInstance()->Reset();
-		Engine::GetInstance()->currentProject = ProjectSerialisation::DeserializeProject("D:/PR/GameEngineTesting/TestProject");
-		Engine::GetInstance()->currentProject.SetCurrentScene(Engine::GetInstance()->currentProject.GetTopScene());
-		Engine::GetInstance()->projectLoaded = true;
+		Engine::GetInstance()->LoadProject("D:/PR/GameEngineTesting/TestProject");
 		projectIsOpen = true;
 		
+	}
+
+	void EditorView::SetCurrentScene(std::shared_ptr<Scene> scene)
+	{
+		this->scene = scene;
 	}
 
 	void EditorView::EditorUpdate(float deltaTime) {
@@ -196,6 +199,7 @@ namespace GameEngine {
 					auto dock_id_down2 = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockspace_id);
 
 					auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.25f, nullptr, &dockspace_id);
+
 					auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.25f, nullptr, &dockspace_id);
 					auto dock_id_up = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 0.075f, nullptr, &dockspace_id);
 
@@ -215,19 +219,18 @@ namespace GameEngine {
 			ImGui::End();
 
 
+
 			ImGui::Begin("Resource Managmenet");
+
+
 			static ImGuiTableFlags flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
 			
 			if(Engine::GetInstance()->projectLoaded)browser.Render(this);
 
 			ImGui::End();
 
+
 			ImGui::Begin("Entities");
-
-			ImGui::InputText("scene Name", scene->sceneName.data(), scene->sceneName.size());
-
-
-
 
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1, 0, 0, 1));
 			if (scene->status == Stopped)
@@ -268,50 +271,81 @@ namespace GameEngine {
 
 			ImGui::Separator();
 
-			ImGUIStyling::CenterText("Entities");
 
-			auto renderData = scene->registry.view<TagComponent>();
-
-			flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
-
-			ImGui::BeginTable("table2", 1, flags, ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y));
-
-			ImGui::TableSetupColumn("Name");
-			ImGui::TableHeadersRow();
-			int counter = 0;
-
-			for (auto ent : renderData)
+			if (ImGui::CollapsingHeader("Scenes"))
 			{
-				auto tag = scene->registry.get<TagComponent>(ent);
-				ImGui::TableNextRow();
+				ImGui::InputText("scene Name", scene->sceneName.data(), scene->sceneName.size());
 
-				ImGui::TableNextColumn();
-				ImGui::BeginGroup();
-				bool selected = ent == currentEntity;
-				ImGui::Selectable(tag.Tag.c_str(), &selected, 0, ImVec2(ImGui::GetWindowSize().x, 15));
-				ImGui::Separator();
-				ImGui::EndGroup();
-				if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
-					entitySelected = true;
-					currentEntity = ent;
+
+				flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
+				ImGui::BeginTable("tableScene", 1, flags, ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y));
+				ImGui::TableSetupColumn("Scene Name");
+				ImGui::TableHeadersRow();
+
+				ProjectData& data = Engine::GetInstance()->GetCurrentProject();
+				auto scenes = data.GetAvailableScenes();
+
+				for (auto sceneName : scenes) {
+					ImGui::TableNextRow();
+
+					ImGui::TableNextColumn();
+					ImGui::BeginGroup();
+					bool selected = scene->sceneName == sceneName;
+					ImGui::Selectable(sceneName.c_str(), &selected, 0, ImVec2(ImGui::GetWindowSize().x, 15));
+					ImGui::Separator();
+					ImGui::EndGroup();
+					if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
+						data.LoadScene(sceneName);
+						data.SetCurrentScene(sceneName, false);
+						spdlog::info("Change Scene");
+					}
 				}
-				counter++;
-
+				ImGui::EndTable();
 			}
-			ImGui::EndTable();
+			if (ImGui::CollapsingHeader("Entities")) {
 
+				auto renderData = scene->registry.view<TagComponent>();
 
-			if (ImGui::BeginPopupContextWindow())
-			{
-				if (ImGui::MenuItem("Create Entity"))
+				flags = ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_Resizable | ImGuiTableFlags_ContextMenuInBody;
+
+				ImGui::BeginTable("table2", 1, flags, ImVec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y));
+
+				ImGui::TableSetupColumn("Name");
+				ImGui::TableHeadersRow();
+				int counter = 0;
+
+				for (auto ent : renderData)
 				{
-					scene->CreateEntity("New Entity");
+					auto tag = scene->registry.get<TagComponent>(ent);
+					ImGui::TableNextRow();
+
+					ImGui::TableNextColumn();
+					ImGui::BeginGroup();
+					bool selected = ent == currentEntity;
+					ImGui::Selectable(tag.Tag.c_str(), &selected, 0, ImVec2(ImGui::GetWindowSize().x, 15));
+					ImGui::Separator();
+					ImGui::EndGroup();
+					if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(0)) {
+						entitySelected = true;
+						currentEntity = ent;
+					}
+					counter++;
+
+				}
+				ImGui::EndTable();
+
+
+				if (ImGui::BeginPopupContextWindow())
+				{
+					if (ImGui::MenuItem("Create Entity"))
+					{
+						scene->CreateEntity("New Entity");
+					}
+
+					ImGui::EndPopup();
 				}
 
-				ImGui::EndPopup();
 			}
-
-
 			ImGui::End();
 
 			flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
@@ -333,7 +367,9 @@ namespace GameEngine {
 			}
 
 			ImGui::End();
-			
+
+
+
 
 			ImGui::Begin("Entity Info");
 
@@ -491,7 +527,8 @@ namespace GameEngine {
 					{
 						if (ImGui::MenuItem("Add Lua Script"))
 						{
-							LuaScript emptyScript = scene->luaHandler.GenerateScript("", Entity(currentEntity, scene));
+							Entity ent = Entity(currentEntity, scene.get());
+							LuaScript emptyScript = scene->luaHandler.GenerateScript("", ent);
 							scene->registry.emplace<LuaScript>(currentEntity, emptyScript);
 						}
 					}

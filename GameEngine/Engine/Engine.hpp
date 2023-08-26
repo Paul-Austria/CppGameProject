@@ -25,8 +25,14 @@ namespace GameEngine {
 
 
 		void LoadProject(const std::string& path);
-		ProjectData& GetCurrentProject() { return currentProject; }
+		ProjectData& GetCurrentProject() {
+			return currentProject;
+		}
 		Input* GetInput();
+		
+		/*
+		*/
+		void PrepareSceneChange(const std::string& nextScene);
 	private:
 
 		friend class EditorView;
@@ -35,6 +41,8 @@ namespace GameEngine {
 
 		void DevelopUpdate(float deltaTime);
 		void SceneUpdate(float deltaTime);
+
+		EditorView* editorView;
 
 		static std::unique_ptr<GameEngine::Engine>  instance;
 		
@@ -47,5 +55,7 @@ namespace GameEngine {
 		bool isRunning = true;
 		bool projectLoaded = false;
 
+		bool toChangeScene = false;
+		std::string toChangeSceneName;
 	};
 }

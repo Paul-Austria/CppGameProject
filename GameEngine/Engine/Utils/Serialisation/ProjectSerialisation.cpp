@@ -171,14 +171,15 @@ namespace GameEngine {
 			data.Scenes.push_back(j["sceneFile"]);
 		}
 		Engine::GetInstance()->currentProject.Path = path;
-		data.LoadedScenes[j["topScene"]] = LoadScene(path+"/"+data.GetTopScene()+".scjson");
-		return data;
+		data.LoadScene(j["topScene"]);
+   		return data;
 	}
 
 
 	std::string ProjectSerialisation::GetFileData(const std::string& path)
 	{
 		std::ifstream file(path);
+		if (!file.is_open()) return "";
 		std::stringstream buffer;
 		buffer << file.rdbuf();
 		return buffer.str();
@@ -186,6 +187,11 @@ namespace GameEngine {
 	std::shared_ptr<Scene> ProjectSerialisation::LoadScene(const std::string& path)
 	{
 		std::string fileData = GetFileData(path);
+		if (fileData == "") {
+			auto ret = std::shared_ptr<Scene>();
+			ret = nullptr;
+			return ret;
+		}
 		json j = json::parse(fileData);
 
 		auto scene = std::make_shared<Scene>();
