@@ -52,6 +52,13 @@ namespace GameEngine {
         LastTime = glfwGetTime();
         while (isRunning && !glfwWindowShouldClose(Window::GetInstance()->GetWindow()))
         {
+            if (toChangeScene)
+            {
+                toChangeScene = false;
+                currentScene->ChangeStatus(Stopped);
+                currentScene = currentProject.LoadedScenes[toChangeSceneName];
+//                currentScene->ChangeStatus(Running);
+            }
             ProfileInstance::GetInstance()->StartProfileSession("Loop");
             float timeDiff = LastTime - glfwGetTime();
             LastTime = glfwGetTime();
@@ -81,14 +88,13 @@ namespace GameEngine {
         TextureResourceManager::GetInstance()->Clear();
         currentProject = ProjectData();
         currentProject.CreateNewScene("FirstScene");
-        currentProject.SetCurrentScene("FirstScene");
+        currentProject.SetCurrentScene("FirstScene", false);
     }
 
     void Engine::LoadProject(const std::string& path)
     {
         currentProject = ProjectSerialisation::DeserializeProject(path);
-    //    currentProject.LoadedScenes[j["topScene"]] = ProjectSerialisation::LoadScene(path + "/" + data.GetTopScene() + ".scjson");
-        currentProject.SetCurrentScene(currentProject.GetTopScene());
+        currentProject.SetCurrentScene(currentProject.GetTopScene(), false);
         projectLoaded = true;
 
     }
@@ -96,6 +102,12 @@ namespace GameEngine {
     Input* Engine::GetInput()
     {
         return &input;
+    }
+
+    void Engine::PrepareSceneChange(const std::string& nextScene)
+    {
+        toChangeScene = true;
+        toChangeSceneName = nextScene;
     }
 
     void Engine::DevelopUpdate(float deltaTime)

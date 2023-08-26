@@ -46,6 +46,12 @@ namespace GameEngine {
 			"Get",&LuaScript::GetVar<sol::environment>
 			);
 		
+		eng.new_usertype<ProjectData>("ProjectData",
+			"LoadScene", &ProjectData::LoadScene,
+			"GetName", &ProjectData::GetName,
+			"SetCurrentScene", &ProjectData::SetCurrentScene
+		);
+
 		eng.new_usertype<Scene>("Scene",
 			"GetSceneName",&Scene::GetSceneName,
 			"CreateEntity",&Scene::CreateEntity,
@@ -60,6 +66,7 @@ namespace GameEngine {
 		eng.new_usertype<Engine>("Engine",
 			"GetInstance", &Engine::GetInstance,
 			"GetCurrentScene", &Engine::GetCurrentScene,
+			"GetCurrentProject", &Engine::GetCurrentProject,
 			"GetInput", &Engine::GetInput
 			);
 		

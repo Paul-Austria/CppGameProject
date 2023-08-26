@@ -1,7 +1,7 @@
 #include "ProjectData.hpp"
 #include <Engine/Engine.hpp>
 #include <Engine/Scene/Scene.hpp>
-
+#include "Engine/Utils/Serialisation/ProjectSerialisation.hpp"
 namespace GameEngine {
 	ProjectData::ProjectData(const std::string& path)
 	{
@@ -16,18 +16,36 @@ namespace GameEngine {
 	{
 	}
 
-	void ProjectData::LoadScene(const std::string& name)
+	bool ProjectData::LoadScene(const std::string& name)
 	{
+		//Check if already loaded 
+		if (LoadedScenes.find(name) != LoadedScenes.end()) {
+			return true;
+		}
+		std::shared_ptr<Scene> ret =  ProjectSerialisation::LoadScene(this->Path + "/" + name + ".scjson");
+		if (ret != nullptr){
+			LoadedScenes[name] = ret;
+			return true;
+		}
+		return false;
 	}
-	void ProjectData::SetCurrentScene(const std::string& name)
+	bool ProjectData::SetCurrentScene(const std::string& name, bool isActive)
 	{
 		if (LoadedScenes.find(name) != LoadedScenes.end())
 		{
-			Engine::GetInstance()->SetCurrentScene(LoadedScenes[name]);
+			if (isActive) {
+				LoadedScenes[name]->ChangeStatus(Running);
+			}
+			Engine::GetInstance()->PrepareSceneChange(name);
+//			Engine::GetInstance()->GetCurrentScene()->ChangeStatus(Stopped);
+//			LoadedScenes[name]->ChangeStatus(Running);
+//			Engine::GetInstance()->SetCurrentScene(LoadedScenes[name]);
+			return true;
 		}
+		return false;
 	}
-	int ProjectData::UnloadScene(const std::string& name) {
-		return 0;
+	bool ProjectData::UnloadScene(const std::string& name) {
+		return true;
 	}
 	std::shared_ptr<Scene> ProjectData::CreateNewScene(const std::string& name)
 	{

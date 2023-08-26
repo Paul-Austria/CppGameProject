@@ -22,17 +22,19 @@ namespace GameEngine {
 		std::string GetName() { return Name; }
 
 		std::string& GetPath() { return Path; }
-		void LoadScene(const std::string& name);
+		bool LoadScene(const std::string& name);
 
-		void SetCurrentScene(const std::string& name);
+		bool SetCurrentScene(const std::string& name, bool isActive = true);
 	
 
-		int UnloadScene(const std::string& name);
+		bool UnloadScene(const std::string& name);
 		std::shared_ptr<Scene> CreateNewScene(const std::string& name);
 
 
 		void SetTopScene(const std::string& topScene) { this->TopSceneName = topScene; }
 		std::string GetTopScene() { return TopSceneName; }
+
+		std::list<std::string>& GetAvailableScenes() { return Scenes; }
 	protected:
 		void SetPath(const std::string& path) { this->Path = path; }
 	private:
