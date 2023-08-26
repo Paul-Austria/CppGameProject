@@ -417,6 +417,7 @@ namespace GameEngine {
 							ImGui::ColorPicker4("Color", color);
 							col.x = color[0];
 							col.y = color[1];
+							col.y = color[1];
 							col.z = color[2];
 							col.a = color[3];
 							renderable.SetColor(col);

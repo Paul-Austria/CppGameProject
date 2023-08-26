@@ -152,9 +152,8 @@ namespace GameEngine {
 
         float target_width = width;
         float target_height = height;
-        float A = (target_width / target_height)/99999.0f; // target aspect ratio 
+        float A = (target_width / target_height); // target aspect ratio 
         float V = A ;
-
         glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1000.0f, 1000.0f);
 
 
@@ -223,7 +222,7 @@ namespace GameEngine {
         glClear(GL_COLOR_BUFFER_BIT);
     
 
-                /*
+                
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClear(GL_COLOR_BUFFER_BIT);
     
@@ -231,7 +230,7 @@ namespace GameEngine {
         glBindVertexArray(quadVAO);
         glBindTexture(GL_TEXTURE_2D, currentTarget.ID);	// use the color attachment texture as the texture of the quad plane
         glDrawArrays(GL_TRIANGLES, 0,6);
-    */
+    
 	}
 
 

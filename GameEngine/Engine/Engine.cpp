@@ -49,11 +49,10 @@ namespace GameEngine {
 
     void Engine::Loop()
     {
-        ProfileInstance::GetInstance()->StartProfileSession("Loop");
         LastTime = glfwGetTime();
         while (isRunning && !glfwWindowShouldClose(Window::GetInstance()->GetWindow()))
         {
-            
+            ProfileInstance::GetInstance()->StartProfileSession("Loop");
             float timeDiff = LastTime - glfwGetTime();
             LastTime = glfwGetTime();
             SceneUpdate(timeDiff);

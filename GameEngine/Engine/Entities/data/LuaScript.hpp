@@ -46,8 +46,8 @@ namespace GameEngine {
                 alreadyRun = true;
                 try
                 {
-                    sol::function update = this->environment["update"];
-                    update(deltaTime);
+                    sol::function setup = this->environment["setup"];
+                    setup();
                 }
                 catch (const std::exception& exc)
                 {
