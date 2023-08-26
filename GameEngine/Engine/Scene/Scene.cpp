@@ -47,12 +47,6 @@ namespace GameEngine {
 		entity.AddComponent<LuaScript>(script);
 
 		DestroyEntity(entity);
-
-
-
-
-
-		editorView = EditorView(this);
 	}
 	Scene::~Scene()
 	{
@@ -201,10 +195,6 @@ namespace GameEngine {
 	}
 
 	void Scene::EditorUpdate(float deltaTime) {
-		
-		editorView.EditorUpdate(deltaTime);
-
-		
 	}
 
 

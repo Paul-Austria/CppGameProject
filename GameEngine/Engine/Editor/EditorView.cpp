@@ -14,6 +14,7 @@
 #include <Engine/Utils/Serialisation/ProjectSerialisation.hpp>c
 #include <Engine/Engine.hpp>
 
+#include <Engine/Entities/Entity.hpp>
 #include <Engine/Entities/data/DataStructs.hpp>
 #include <Engine/Entities/data/LuaScript.hpp>
 
@@ -22,9 +23,8 @@
 #include <Windows.h>
 
 namespace GameEngine {
-	EditorView::EditorView(Scene* currentScene)
+	EditorView::EditorView()
 	{
-		scene = currentScene;
 		browser = ContentBrowser();
 	}
 
@@ -46,6 +46,11 @@ namespace GameEngine {
 		Engine::GetInstance()->LoadProject("D:/PR/GameEngineTesting/TestProject");
 		projectIsOpen = true;
 		
+	}
+
+	void EditorView::SetCurrentScene(std::shared_ptr<Scene> scene)
+	{
+		this->scene = scene;
 	}
 
 	void EditorView::EditorUpdate(float deltaTime) {
@@ -522,7 +527,8 @@ namespace GameEngine {
 					{
 						if (ImGui::MenuItem("Add Lua Script"))
 						{
-							LuaScript emptyScript = scene->luaHandler.GenerateScript("", Entity(currentEntity, scene));
+							Entity ent = Entity(currentEntity, scene.get());
+							LuaScript emptyScript = scene->luaHandler.GenerateScript("", ent);
 							scene->registry.emplace<LuaScript>(currentEntity, emptyScript);
 						}
 					}

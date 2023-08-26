@@ -9,7 +9,7 @@
 #include <Engine/Entities/Entity.hpp>
 #include <Engine/ResourceManagement/TextureResourceManager.hpp>
 #include <Engine/Utils/Profiling/ProfileInstance.hpp>
-
+#include "Engine/Editor/EditorView.hpp"
 //#define SOL_ALL_SAFETIES_ON 1
 //#include <sol/sol.hpp>
 //#include <Engine/sol/assert.hpp>
@@ -20,9 +20,14 @@ std::unique_ptr<GameEngine::Engine> GameEngine::Engine::instance = 0;
 namespace GameEngine {
     Engine::Engine()
     {
+#ifdef  DEBUG
+        editorView = new EditorView();
+#endif //  DEBUG
+
     }
     Engine::~Engine()
     {
+        delete editorView;
     //    delete instance;
     }
     void Engine::Init(int widht, int height,const std::string& title , const std::string& ProjectPath, bool isFullScreen)
@@ -114,7 +119,8 @@ namespace GameEngine {
     {
         if (currentScene != nullptr)
         {
-            currentScene->EditorUpdate(deltaTime);
+            editorView->SetCurrentScene(currentScene);
+            editorView->EditorUpdate(deltaTime);
         }
     }
     void Engine::SceneUpdate(float deltaTime)

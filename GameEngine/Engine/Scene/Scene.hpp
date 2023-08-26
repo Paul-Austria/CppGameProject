@@ -55,7 +55,6 @@ namespace GameEngine {
 		friend class ContentBrowser;
 
 		Texture renderTarget;
-		EditorView editorView;
 
 		void BackgroundUpdate(float deltaTime, bool isRunning);
 		void EditorUpdate(float deltaTime);

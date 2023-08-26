@@ -1,15 +1,14 @@
 #pragma once
 #include <entt/entt.hpp>
 #include "ContentBrowser.hpp"
-
+#include <memory>
 namespace GameEngine {
 	class Scene;
 
 	class EditorView
 	{
 	public:
-		EditorView(Scene* currentScene);
-		EditorView() = default;
+		EditorView();
 		~EditorView() = default;
 
 
@@ -19,10 +18,11 @@ namespace GameEngine {
 		void CreateProject();
 		void SaveProject();
 		void OpenProject();
+		void SetCurrentScene(std::shared_ptr<Scene> scene);
 	private:
 		friend class ContentBrowser;
 
-		Scene* scene;
+		std::shared_ptr<Scene> scene;
 		bool projectLoaded = false;
 		bool newSceneLoaded = false;
 		bool projectIsOpen = false;

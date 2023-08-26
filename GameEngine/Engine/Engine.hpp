@@ -42,6 +42,8 @@ namespace GameEngine {
 		void DevelopUpdate(float deltaTime);
 		void SceneUpdate(float deltaTime);
 
+		EditorView* editorView;
+
 		static std::unique_ptr<GameEngine::Engine>  instance;
 		
 
